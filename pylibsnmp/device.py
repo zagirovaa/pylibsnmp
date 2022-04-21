@@ -56,13 +56,13 @@ class Device:
             version = Device.DEFAULT["VERSION"]
         self.__version: int = version
         self.__session: Session = None
-        # self.__description: str = ""
-        # self.__uptime: str = ""
-        # self.__contact: str = ""
-        # self.__location: str = ""
+        self.__description: str = ""
+        self.__uptime: str = ""
+        self.__contact: str = ""
+        self.__location: str = ""
         self.__count: int = 0
         self.__indexes: List[int] = []
-        # self.__autoupdate: bool = False
+        self.__autoupdate: bool = False
 
     def __str__(self) -> str:
         """
@@ -156,29 +156,29 @@ class Device:
         else:
             logging.error("Incorrect format or unsupported version of snmp.")
 
-    # @property
-    # def autoupdate(self) -> bool:
-    #     return self.__autoupdate
+    @property
+    def autoupdate(self) -> bool:
+        return self.__autoupdate
 
-    # @autoupdate.setter
-    # def autoupdate(self, new_value: bool) -> None:
-    #     self.__autoupdate = new_value
+    @autoupdate.setter
+    def autoupdate(self, new_value: bool) -> None:
+        self.__autoupdate = new_value
 
-    # @property
-    # def description(self) -> str:
-    #     return self.__description
+    @property
+    def description(self) -> str:
+        return self.__description
 
-    # @property
-    # def uptime(self) -> str:
-    #     return self.__uptime
+    @property
+    def uptime(self) -> str:
+        return self.__uptime
 
-    # @property
-    # def contact(self) -> str:
-    #     return self.__contact
+    @property
+    def contact(self) -> str:
+        return self.__contact
 
-    # @property
-    # def location(self) -> str:
-    #     return self.__location
+    @property
+    def location(self) -> str:
+        return self.__location
 
     @property
     def count(self) -> int:
