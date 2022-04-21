@@ -17,43 +17,54 @@ class Device:
     Class for creating snmp enabled network devices
     """
 
-    # SNMP default parameters
-    DEFAULT: Dict[str, any] = {
-        "ADDRESS": "127.0.0.1",
-        "PORT": 161,
-        "COMMUNITY": "public",
-        "VERSION": 2
-    }
-    # Supported SNMP versions
-    VERSIONS: Tuple[int] = (1, 2)
     # Interface speed coefficient
     # For 10 Mb/s speed we get value of 10000000
     # speed x 1000000
     COEFFICIENT: int = 1000000
+    # Supported SNMP versions
+    VERSIONS: Tuple[int] = (1, 2)
+
+    # Number of devices counter
+    dev_number = 0
+    # SNMP default parameters
+    default: Dict[str, any] = {
+        "name": "device",
+        "address": "127.0.0.1",
+        "port": 161,
+        "community": "public",
+        "version": 2
+    }
 
     def __init__(
             self,
-            address: str = DEFAULT["ADDRESS"],
-            port: int = DEFAULT["PORT"],
-            community: str = DEFAULT["COMMUNITY"],
-            version: int = DEFAULT["VERSION"]) -> None:
+            name: str = default["name"],
+            address: str = default["address"],
+            port: int = default["port"],
+            community: str = default["community"],
+            version: int = default["version"]) -> None:
         """ Constructor """
 
+        # Incrementing device number counter each time object is created
+        Device.dev_number += 1
+        # Device name must be wet or will be given a default name
+        if not name.strip() or name == Device.default["name"]:
+            name = Device.default["name"] + str(Device.dev_number)
+        self.__name: str = name
         # Ip address must be set and have an appropriate format
         if not address or not is_ip_address(address):
-            address = Device.DEFAULT["ADDRESS"]
+            address = Device.default["address"]
         self.__address: str = address
         # Port must be set and have value between 1 and 65535
         if 1 > port > 65535:
-            port = Device.DEFAULT["PORT"]
+            port = Device.default["port"]
         self.__port: int = port
         # Community must be set
         if not community.strip():
-            community = Device.DEFAULT["COMMUNITY"]
+            community = Device.default["community"]
         self.__community: str = community
         # Version must be set and be one of supported
         if version not in Device.VERSIONS:
-            version = Device.DEFAULT["VERSION"]
+            version = Device.default["version"]
         self.__version: int = version
         self.__session: Session = None
         self.__description: str = ""
@@ -70,11 +81,11 @@ class Device:
         """
 
         value: str = (
-            "Name:          {0} "
-            "Address:       {1} "
-            "Port:          {2} "
-            "Community:     {3} "
-            "Version:       {4} "
+            "Name:          {0}\n"
+            "Address:       {1}\n"
+            "Port:          {2}\n"
+            "Community:     {3}\n"
+            "Version:       {4}\n"
         )
         return value.format(
             self.__name,
@@ -87,20 +98,20 @@ class Device:
     # ---------------------------------------
     # Setters and getters declaration section
     # ---------------------------------------
-    # @property
-    # def name(self) -> str:
-    #     return self.__name
+    @property
+    def name(self) -> str:
+        return self.__name
 
-    # @name.setter
-    # def name(self, new_value: str) -> None:
-    #     if type(new_value) == str:
-    #         new_value.strip()
-    #         if new_value:
-    #             self.__name = new_value
-    #         else:
-    #             logger.error('Value is empty.')
-    #     else:
-    #         logger.error('Value format is incorrect.')
+    @name.setter
+    def name(self, new_value: str) -> None:
+        if type(new_value) == str:
+            new_value.strip()
+            if new_value:
+                self.__name = new_value
+            else:
+                logging.error("Value is empty.")
+        else:
+            logging.error("Value format is incorrect.")
 
     @property
     def address(self) -> str:
@@ -203,11 +214,12 @@ class Device:
                 community=self.__community,
                 version=self.__version
             )
+            self.populate()
             return True
         except Exception as err:
             logging.error("Could not connect to device.")
             logging.error(err)
-            return False
+        return False
 
     def disconnect(self) -> bool:
         """
@@ -224,20 +236,29 @@ class Device:
         self.disconnect()
         self.connect()
 
+    def populate(self) -> None:
+        """
+        Populates device fields with necessary data
+        """
+
+        self.__description = self.__get_description()
+        self.__count = self.__get_if_count()
+        self.__indexes = self.__get_if_indexes()
+
     def get_if_type(self, port: int) -> int:
         """ Returns type of the given interface """
 
         port_type: int = 0
         if self.__count > 0 and port in self.__indexes:
             try:
-                snmp_data: str = str(
-                    self.__session.get(snmp.OIDS["IF_TYPE"] + str(port))
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_TYPE"] + str(port)
                 )
             except Exception as err:
                 logging.error("Could not get interface type.")
                 logging.error(err)
             else:
-                interface_value: int = snmp.parse_value(snmp_data)
+                interface_value = snmp_data.value
                 if interface_value.isdigit():
                     port_type = int(interface_value)
                 else:
@@ -256,14 +277,14 @@ class Device:
         port_speed: int = 0
         if self.__count > 0 and port in self.__indexes:
             try:
-                snmp_data: str = str(
-                    self.__session.get(snmp.OIDS["IF_SPEED"] + str(port))
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_SPEED"] + str(port)
                 )
             except Exception as err:
                 logging.error("Could not get interface speed.")
                 logging.error(err)
             else:
-                interface_value: int = snmp.parse_value(snmp_data)
+                interface_value = snmp_data.value
                 if interface_value.isdigit():
                     interface_value = int(interface_value)
                     if interface_value > Device.COEFFICIENT:
@@ -284,14 +305,14 @@ class Device:
         port_bandwidth: int = 0
         if self.__count > 0 and port in self.__indexes:
             try:
-                snmp_data: str = str(
-                    self.__session.get(snmp.OIDS["IF_IN_OCTETS"] + str(port))
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_IN_OCTETS"] + str(port)
                 )
             except Exception as err:
                 logging.error("Could not get number of inboud bytes.")
                 logging.error(err)
             else:
-                interface_value: int = snmp.parse_value(snmp_data)
+                interface_value = snmp_data.value
                 if interface_value.isdigit():
                     port_bandwidth = int(interface_value)
                 else:
@@ -310,14 +331,14 @@ class Device:
         port_bandwidth: int = 0
         if self.__count > 0 and port in self.__indexes:
             try:
-                snmp_data: str = str(
-                    self.__session.get(snmp.OIDS["IF_OUT_OCTETS"] + str(port))
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_OUT_OCTETS"] + str(port)
                 )
             except Exception as err:
                 logging.error("Could not get number of outboud bytes.")
                 logging.error(err)
             else:
-                interface_value: int = snmp.parse_value(snmp_data)
+                interface_value = snmp_data.value
                 if interface_value.isdigit():
                     port_bandwidth = int(interface_value)
                 else:
@@ -333,6 +354,23 @@ class Device:
     # -----------------------------------
     # Рrivate methods declaration section
     # -----------------------------------
+    def __get_description(self) -> str:
+        """
+        Returns device description
+        """
+
+        description: str = ""
+        try:
+            snmp_data = self.__session.get(
+                snmp.OIDS["SYS_DECRIPTION"]
+            )
+        except Exception as err:
+            logging.error("Could not get device description.")
+            logging.error(err)
+        else:
+            description = snmp_data.value
+        return description
+
     def __get_if_count(self) -> int:
         """
         Returns number of interfaces
@@ -340,12 +378,12 @@ class Device:
 
         if_count: int = 0
         try:
-            snmp_data: str = str(self.__session.get(snmp.OIDS['IF_NUMBER']))
+            snmp_data = self.__session.get(snmp.OIDS["IF_NUMBER"])
         except Exception as err:
             logging.error("Could not get number of interfaces.")
             logging.error(err)
         else:
-            data: str = snmp.parse_value(snmp_data)
+            data = snmp_data.value
             if data.isdigit():
                 if_count = int(data)
             else:
@@ -359,7 +397,7 @@ class Device:
 
         if_index: List[int] = []
         try:
-            interfaces: int = self.__session.walk(snmp.OIDS["IF_INDEX"])
+            interfaces = self.__session.walk(snmp.OIDS["IF_INDEX"])
         except Exception as err:
             logging.error("Could not get list of interface indexes.")
             logging.error(err)
@@ -367,8 +405,7 @@ class Device:
             index_count: int = len(interfaces)
             if index_count > 0:
                 for interface in interfaces:
-                    interface = str(interface)
-                    if_index.append(int(snmp.parse_value(interface)))
+                    if_index.append(int(interface.value))
             else:
                 logging.error("No interface index found.")
         return if_index
