@@ -97,10 +97,6 @@ class Device:
     # Setters and getters declaration section
     # ---------------------------------------
     @property
-    def name(self) -> str:
-        return self.__name
-
-    @property
     def address(self) -> str:
         return self.__address
 
@@ -118,17 +114,6 @@ class Device:
             logging.error("IP address has to be in text string format.")
 
     @property
-    def port(self) -> int:
-        return self.__port
-
-    @port.setter
-    def port(self, new_value: int) -> None:
-        if 1 > new_value > 65535:
-            self.__version = new_value
-        else:
-            logging.error("Port number is out of range.")
-
-    @property
     def community(self) -> str:
         return self.__community
 
@@ -142,6 +127,17 @@ class Device:
                 logging.error("Community is not set.")
         else:
             logging.error("Community has to be in text string format.")
+
+    @property
+    def port(self) -> int:
+        return self.__port
+
+    @port.setter
+    def port(self, new_value: int) -> None:
+        if 1 > new_value > 65535:
+            self.__version = new_value
+        else:
+            logging.error("Port number is out of range.")
 
     @property
     def version(self) -> int:
@@ -163,28 +159,28 @@ class Device:
         self.__autoupdate = new_value
 
     @property
-    def description(self) -> str:
-        return self.__description
-
-    @property
-    def uptime(self) -> str:
-        return self.__uptime
+    def count(self) -> int:
+        return self.__count
 
     @property
     def contact(self) -> str:
         return self.__contact
 
     @property
-    def location(self) -> str:
-        return self.__location
-
-    @property
-    def count(self) -> int:
-        return self.__count
+    def description(self) -> str:
+        return self.__description
 
     @property
     def indexes(self) -> List[int]:
         return self.__indexes
+
+    @property
+    def location(self) -> str:
+        return self.__location
+
+    @property
+    def name(self) -> str:
+        return self.__name
 
     @property
     def updatetime(self) -> int:
@@ -196,6 +192,10 @@ class Device:
             self.__updatetime = new_value
         else:
             logging.error("Incorrect format of update time.")
+
+    @property
+    def uptime(self) -> str:
+        return self.__uptime
 
     # ----------------------------------
     # Public methods declaration section

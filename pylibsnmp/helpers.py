@@ -28,11 +28,12 @@ def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
     step: int = 2
     if delimiter == ".":
         step = 4
-    list_of_bytes = [ord(octet) for octet in list(octets)]
+    list_of_bytes: List[int] = [ord(octet) for octet in list(octets)]
     # Mac address in the format of AABBCCDDEEFF
-    mac_address = bytearray(list_of_bytes).hex().upper()
+    mac_address: str = bytearray(list_of_bytes).hex().upper()
     # Converts AABBCCDDEEFF to AA:BB:CC:DD:EE:FF
-    result = delimiter.join(
+    result: str = delimiter.join(
+        # Mac address consists of 12 symbols (0..9, a..f, A..F)
         [mac_address[i:i+step] for i in range(0, 12, step)]
     )
     return result
