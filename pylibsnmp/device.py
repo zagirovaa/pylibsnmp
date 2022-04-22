@@ -40,7 +40,9 @@ class Device:
             port: int = DEFAULT["PORT"],
             community: str = DEFAULT["COMMUNITY"],
             version: int = DEFAULT["VERSION"]) -> None:
-        """ Constructor """
+        """
+        Constructor
+        """
 
         # Ip address must be set and have an appropriate format
         if not address or not is_ip_address(address):
@@ -67,10 +69,9 @@ class Device:
         self.__location: str = ""
         self.__name: str = ""
         self.__session: Session = None
-        self.__uptime: str = ""
-
         # Each 60 seconds count and indexes will be updated
         self.__updatetime: int = 60
+        self.__uptime: str = ""
 
     def __str__(self) -> str:
         """
@@ -230,12 +231,12 @@ class Device:
                     snmp.OIDS["IF_ADMIN_STATUS"] + str(port)
                 )
             except Exception as err:
-                logging.error("Could not get number of inboud bytes.")
+                logging.error("Could not get interface admin status.")
                 logging.error(err)
             else:
                 value = snmp_data.value
                 if value.isdigit():
-                    status = snmp.IF_ADMIN_STATES[value]
+                    status = snmp.IF_STATES[value]
                 else:
                     logging.error(
                         "Interface admin status has to be in digital format."
@@ -273,6 +274,35 @@ class Device:
                 "No interface or given interface number is incorrect."
             )
         return port_bandwidth
+
+    def get_if_oper_status(self, port: int) -> str:
+        """
+        Returns operation status of the given interface
+        """
+
+        status: str = ""
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_OPER_STATUS"] + str(port)
+                )
+            except Exception as err:
+                logging.error("Could not get interface operation status.")
+                logging.error(err)
+            else:
+                value = snmp_data.value
+                if value.isdigit():
+                    status = snmp.IF_STATES[value]
+                else:
+                    logging.error(
+                        "Interface operation status " +
+                        "has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return status
 
     def get_if_out_bandwidth(self, port: int) -> int:
         """

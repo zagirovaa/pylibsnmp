@@ -74,9 +74,14 @@ IF_TYPES: Dict[str, str] = {
     "32":   "frame-relay"
 }
 
-# asdfas
-IF_ADMIN_STATES: Dict[str, str] = {
+# The desired state (admin, operational)of the interface.
+# The testing(3) state indicates that no operational packets can be passed.
+IF_STATES: Dict[str, str] = {
     "1": "up",
     "2": "down",
-    "3": "testing"
+    "3": "testing",
+    "4": "unknown",
+    "5": "dormant",
+    "6": "notPresent",
+    "7": "lowerLayerDown"
 }
