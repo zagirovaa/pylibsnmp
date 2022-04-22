@@ -218,6 +218,34 @@ class Device:
             logging.error(err)
         return False
 
+    def get_if_admin_status(self, port: int) -> str:
+        """
+        Returns admin status of the given interface
+        """
+
+        status: str = ""
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_ADMIN_STATUS"] + str(port)
+                )
+            except Exception as err:
+                logging.error("Could not get number of inboud bytes.")
+                logging.error(err)
+            else:
+                value = snmp_data.value
+                if value.isdigit():
+                    status = snmp.IF_ADMIN_STATES[value]
+                else:
+                    logging.error(
+                        "Interface admin status has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return status
+
     def get_if_in_bandwidth(self, port: int) -> int:
         """
         Returns number of inboud packets on the given interface
@@ -286,7 +314,6 @@ class Device:
                     snmp_data = self.__session.get(
                         snmp.OIDS["IF_PHYS_ADDRESS"] + str(port)
                     )
-                    print(snmp_data)
                 except Exception as err:
                     logging.error(
                         "Could not get physical address of the interface."
@@ -356,9 +383,9 @@ class Device:
                 logging.error("Could not get interface type.")
                 logging.error(err)
             else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    port_type = snmp.IF_TYPES[interface_value]
+                value = snmp_data.value
+                if value.isdigit():
+                    port_type = snmp.IF_TYPES[value]
                 else:
                     logging.error(
                         "Interface type has to be in digital format."

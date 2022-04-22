@@ -10,4 +10,5 @@ dev.community = "public"
 dev.address = "192.168.10.206"
 dev.version = 2
 if dev.connect():
-    print(dev.get_if_phys_address(1, "."))
+    for i in dev.indexes:
+        print("Port " + str(i) + " is in " + dev.get_if_admin_status(i) + " state.")

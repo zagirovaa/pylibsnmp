@@ -73,3 +73,10 @@ IF_TYPES: Dict[str, str] = {
     "31":   "sip",
     "32":   "frame-relay"
 }
+
+# asdfas
+IF_ADMIN_STATES: Dict[str, str] = {
+    "1": "up",
+    "2": "down",
+    "3": "testing"
+}
