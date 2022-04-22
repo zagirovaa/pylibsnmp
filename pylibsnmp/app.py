@@ -10,4 +10,4 @@ dev.community = "public"
 dev.address = "192.168.10.206"
 dev.version = 2
 if dev.connect():
-    print(dev.uptime)
+    print(dev.get_if_type(1))

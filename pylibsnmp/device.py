@@ -217,6 +217,9 @@ class Device:
             logging.error(err)
         return False
 
+    def get_if_admin_status(self, port: int) -> int:
+        pass
+
     def get_if_in_bandwidth(self, port: int) -> int:
         """
         Returns number of inboud packets on the given interface
@@ -320,7 +323,7 @@ class Device:
             else:
                 interface_value = snmp_data.value
                 if interface_value.isdigit():
-                    port_type = int(interface_value)
+                    port_type = snmp.IF_TYPES[interface_value]
                 else:
                     logging.error(
                         "Interface type has to be in digital format."
