@@ -217,79 +217,6 @@ class Device:
             logging.error(err)
         return False
 
-    def disconnect(self) -> bool:
-        """
-        Drops connection
-        """
-
-        pass
-
-    def reconnect(self) -> bool:
-        """
-        Drops connection and than initiates it again
-        """
-
-        self.disconnect()
-        self.connect()
-
-    def get_if_type(self, port: int) -> int:
-        """
-        Returns type of the given interface
-        """
-
-        port_type: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_TYPE"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface type.")
-                logging.error(err)
-            else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    port_type = int(interface_value)
-                else:
-                    logging.error(
-                        "Interface type has to be in digital format."
-                    )
-        else:
-            logging.error(
-                "No interface or given interface number is incorrect."
-            )
-        return port_type
-
-    def get_if_speed(self, port: int) -> int:
-        """
-        Returns speed of the given interface
-        """
-
-        port_speed: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_SPEED"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface speed.")
-                logging.error(err)
-            else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    interface_value = int(interface_value)
-                    if interface_value > Device.COEFFICIENT:
-                        port_speed = interface_value / Device.COEFFICIENT
-                else:
-                    logging.error(
-                        "Interface number has to be in digital format."
-                    )
-        else:
-            logging.error(
-                "No interface or given interface number is incorrect."
-            )
-        return port_speed
-
     def get_if_in_bandwidth(self, port: int) -> int:
         """
         Returns number of inboud packets on the given interface
@@ -345,6 +272,64 @@ class Device:
                 "No interface or given interface number is incorrect."
             )
         return port_bandwidth
+
+    def get_if_speed(self, port: int) -> int:
+        """
+        Returns speed of the given interface
+        """
+
+        port_speed: int = 0
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_SPEED"] + str(port)
+                )
+            except Exception as err:
+                logging.error("Could not get interface speed.")
+                logging.error(err)
+            else:
+                interface_value = snmp_data.value
+                if interface_value.isdigit():
+                    interface_value = int(interface_value)
+                    if interface_value > Device.COEFFICIENT:
+                        port_speed = interface_value / Device.COEFFICIENT
+                else:
+                    logging.error(
+                        "Interface number has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return port_speed
+
+    def get_if_type(self, port: int) -> int:
+        """
+        Returns type of the given interface
+        """
+
+        port_type: int = 0
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_TYPE"] + str(port)
+                )
+            except Exception as err:
+                logging.error("Could not get interface type.")
+                logging.error(err)
+            else:
+                interface_value = snmp_data.value
+                if interface_value.isdigit():
+                    port_type = int(interface_value)
+                else:
+                    logging.error(
+                        "Interface type has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return port_type
 
     # -----------------------------------
     # Рrivate methods declaration section
