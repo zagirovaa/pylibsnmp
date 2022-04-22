@@ -3,8 +3,9 @@
 
 
 from __future__ import annotations
-from typing import Dict, Tuple, List
+from datetime import timedelta
 import logging
+from typing import Dict, Tuple, List
 
 from easysnmp import Session
 
@@ -24,11 +25,8 @@ class Device:
     # Supported SNMP versions
     VERSIONS: Tuple[int] = (1, 2)
 
-    # Number of devices counter
-    dev_number = 0
     # SNMP default parameters
     DEFAULT: Dict[str, any] = {
-        "NAME": "device",
         "ADDRESS": "127.0.0.1",
         "PORT": 161,
         "COMMUNITY": "public",
@@ -37,43 +35,39 @@ class Device:
 
     def __init__(
             self,
-            name: str = DEFAULT["NAME"],
             address: str = DEFAULT["ADDRESS"],
             port: int = DEFAULT["PORT"],
             community: str = DEFAULT["COMMUNITY"],
             version: int = DEFAULT["VERSION"]) -> None:
         """ Constructor """
 
-        # Incrementing device number counter each time object is created
-        Device.dev_number += 1
-        # Device name must be wet or will be given a default name
-        if not name.strip() or name == Device.DEFAULT["NAME"]:
-            name = Device.DEFAULT["NAME"] + str(Device.dev_number)
-        self.__name: str = name
         # Ip address must be set and have an appropriate format
         if not address or not is_ip_address(address):
             address = Device.DEFAULT["ADDRESS"]
         self.__address: str = address
-        # Port must be set and have value between 1 and 65535
-        if 1 > port > 65535:
-            port = Device.DEFAULT["PORT"]
-        self.__port: int = port
         # Community must be set
         if not community.strip():
             community = Device.DEFAULT["COMMUNITY"]
         self.__community: str = community
+        # Port must be set and have value between 1 and 65535
+        if 1 > port > 65535:
+            port = Device.DEFAULT["PORT"]
+        self.__port: int = port
         # Version must be set and be one of supported
         if version not in Device.VERSIONS:
             version = Device.DEFAULT["VERSION"]
         self.__version: int = version
-        self.__session: Session = None
-        self.__description: str = ""
-        self.__uptime: str = ""
-        self.__contact: str = ""
-        self.__location: str = ""
-        self.__count: int = 0
-        self.__indexes: List[int] = []
+
         self.__autoupdate: bool = False
+        self.__contact: str = ""
+        self.__count: int = 0
+        self.__description: str = ""
+        self.__indexes: List[int] = []
+        self.__location: str = ""
+        self.__name: str = ""
+        self.__session: Session = None
+        self.__uptime: str = ""
+
         # Each 60 seconds count and indexes will be updated
         self.__updatetime: int = 60
 
@@ -103,17 +97,6 @@ class Device:
     @property
     def name(self) -> str:
         return self.__name
-
-    @name.setter
-    def name(self, new_value: str) -> None:
-        if type(new_value) == str:
-            new_value.strip()
-            if new_value:
-                self.__name = new_value
-            else:
-                logging.error("Name value is empty.")
-        else:
-            logging.error("Name value format is incorrect.")
 
     @property
     def address(self) -> str:
@@ -250,7 +233,9 @@ class Device:
         self.connect()
 
     def get_if_type(self, port: int) -> int:
-        """ Returns type of the given interface """
+        """
+        Returns type of the given interface
+        """
 
         port_type: int = 0
         if self.__count > 0 and port in self.__indexes:
@@ -276,7 +261,9 @@ class Device:
         return port_type
 
     def get_if_speed(self, port: int) -> int:
-        """ Returns speed of the given interface """
+        """
+        Returns speed of the given interface
+        """
 
         port_speed: int = 0
         if self.__count > 0 and port in self.__indexes:
@@ -304,7 +291,9 @@ class Device:
         return port_speed
 
     def get_if_in_bandwidth(self, port: int) -> int:
-        """ Returns number of inboud packets on the given interface """
+        """
+        Returns number of inboud packets on the given interface
+        """
 
         port_bandwidth: int = 0
         if self.__count > 0 and port in self.__indexes:
@@ -330,7 +319,9 @@ class Device:
         return port_bandwidth
 
     def get_if_out_bandwidth(self, port: int) -> int:
-        """ Returns number of outbound bytes on the given interface """
+        """
+        Returns number of outbound bytes on the given interface
+        """
 
         port_bandwidth: int = 0
         if self.__count > 0 and port in self.__indexes:
@@ -363,26 +354,30 @@ class Device:
         Populates device fields with necessary data
         """
 
-        self.__description = self.__get_description()
         self.__count = self.__get_if_count()
+        self.__contact = self.__get_contact()
+        self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
+        self.__location = self.__get_location()
+        self.__name = self.__get_name()
+        self.__uptime = self.__get_uptime()
 
-    def __get_description(self) -> str:
+    def __get_contact(self) -> str:
         """
-        Returns device description
+        Returns device contact
         """
 
-        description: str = ""
+        contact: str = ""
         try:
             snmp_data = self.__session.get(
-                snmp.OIDS["SYS_DECRIPTION"]
+                snmp.OIDS["SYS_CONTACT"]
             )
         except Exception as err:
-            logging.error("Could not get device description.")
+            logging.error("Could not get device contact.")
             logging.error(err)
         else:
-            description = snmp_data.value
-        return description
+            contact = snmp_data.value
+        return contact
 
     def __get_if_count(self) -> int:
         """
@@ -403,6 +398,23 @@ class Device:
                 logging.error("Value format is incorrect.")
         return if_count
 
+    def __get_description(self) -> str:
+        """
+        Returns device description
+        """
+
+        description: str = ""
+        try:
+            snmp_data = self.__session.get(
+                snmp.OIDS["SYS_DECRIPTION"]
+            )
+        except Exception as err:
+            logging.error("Could not get device description.")
+            logging.error(err)
+        else:
+            description = snmp_data.value
+        return description
+
     def __get_if_indexes(self) -> List[int]:
         """
         Returns list of interfaces indexes
@@ -422,3 +434,56 @@ class Device:
             else:
                 logging.error("No interface index found.")
         return if_index
+
+    def __get_location(self) -> str:
+        """
+        Returns device location
+        """
+
+        location: str = ""
+        try:
+            snmp_data = self.__session.get(
+                snmp.OIDS["SYS_LOCATION"]
+            )
+        except Exception as err:
+            logging.error("Could not get device location.")
+            logging.error(err)
+        else:
+            location = snmp_data.value
+        return location
+
+    def __get_name(self) -> str:
+        """
+        Returns device name
+        """
+
+        name: str = ""
+        try:
+            snmp_data = self.__session.get(
+                snmp.OIDS["SYS_NAME"]
+            )
+        except Exception as err:
+            logging.error("Could not get device name.")
+            logging.error(err)
+        else:
+            name = snmp_data.value
+        return name
+
+    def __get_uptime(self) -> str:
+        """
+        Returns device uptime
+        """
+
+        uptime: str = ""
+        try:
+            snmp_data = self.__session.get(
+                snmp.OIDS["SYS_UPTIME"]
+            )
+        except Exception as err:
+            logging.error("Could not get device uptime.")
+            logging.error(err)
+        else:
+            # snmp_data.value is the time (in hundredths of a second) since the
+            # network management portion of the system was last re-initialized
+            uptime = str(timedelta(seconds=(int(snmp_data.value)) / 100))
+        return uptime
