@@ -236,7 +236,7 @@ class Device:
             else:
                 value = snmp_data.value
                 if value.isdigit():
-                    status = snmp.IF_STATES[value]
+                    status = snmp.IF_ADMIN_STATES[value]
                 else:
                     logging.error(
                         "Interface admin status has to be in digital format."
@@ -292,7 +292,7 @@ class Device:
             else:
                 value = snmp_data.value
                 if value.isdigit():
-                    status = snmp.IF_STATES[value]
+                    status = snmp.IF_OPER_STATES[value]
                 else:
                     logging.error(
                         "Interface operation status " +

@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import Dict
 
 
+# OIDs (Object IDentifiers) used in library
 OIDS: Dict[str, str] = {
     "SYS_DECRIPTION":       "1.3.6.1.2.1.1.1.0",
     "SYS_UPTIME":           "1.3.6.1.2.1.1.3.0",
@@ -74,9 +75,19 @@ IF_TYPES: Dict[str, str] = {
     "32":   "frame-relay"
 }
 
-# The desired state (admin, operational)of the interface.
-# The testing(3) state indicates that no operational packets can be passed.
-IF_STATES: Dict[str, str] = {
+# The desired admin state of the interface.
+# The testing(3) state indicates that no
+# operational packets can be passed.
+IF_ADMIN_STATES: Dict[str, str] = {
+    "1": "up",
+    "2": "down",
+    "3": "testing"
+}
+
+# The desired operational state of the interface.
+# The testing(3) state indicates that no
+# operational packets can be passed.
+IF_OPER_STATES: Dict[str, str] = {
     "1": "up",
     "2": "down",
     "3": "testing",
