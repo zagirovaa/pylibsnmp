@@ -27,44 +27,44 @@ class Device:
     # Number of devices counter
     dev_number = 0
     # SNMP default parameters
-    default: Dict[str, any] = {
-        "name": "device",
-        "address": "127.0.0.1",
-        "port": 161,
-        "community": "public",
-        "version": 2
+    DEFAULT: Dict[str, any] = {
+        "NAME": "device",
+        "ADDRESS": "127.0.0.1",
+        "PORT": 161,
+        "COMMUNITY": "public",
+        "VERSION": 2
     }
 
     def __init__(
             self,
-            name: str = default["name"],
-            address: str = default["address"],
-            port: int = default["port"],
-            community: str = default["community"],
-            version: int = default["version"]) -> None:
+            name: str = DEFAULT["NAME"],
+            address: str = DEFAULT["ADDRESS"],
+            port: int = DEFAULT["PORT"],
+            community: str = DEFAULT["COMMUNITY"],
+            version: int = DEFAULT["VERSION"]) -> None:
         """ Constructor """
 
         # Incrementing device number counter each time object is created
         Device.dev_number += 1
         # Device name must be wet or will be given a default name
-        if not name.strip() or name == Device.default["name"]:
-            name = Device.default["name"] + str(Device.dev_number)
+        if not name.strip() or name == Device.DEFAULT["NAME"]:
+            name = Device.DEFAULT["NAME"] + str(Device.dev_number)
         self.__name: str = name
         # Ip address must be set and have an appropriate format
         if not address or not is_ip_address(address):
-            address = Device.default["address"]
+            address = Device.DEFAULT["ADDRESS"]
         self.__address: str = address
         # Port must be set and have value between 1 and 65535
         if 1 > port > 65535:
-            port = Device.default["port"]
+            port = Device.DEFAULT["PORT"]
         self.__port: int = port
         # Community must be set
         if not community.strip():
-            community = Device.default["community"]
+            community = Device.DEFAULT["COMMUNITY"]
         self.__community: str = community
         # Version must be set and be one of supported
         if version not in Device.VERSIONS:
-            version = Device.default["version"]
+            version = Device.DEFAULT["VERSION"]
         self.__version: int = version
         self.__session: Session = None
         self.__description: str = ""
@@ -74,6 +74,8 @@ class Device:
         self.__count: int = 0
         self.__indexes: List[int] = []
         self.__autoupdate: bool = False
+        # Each 60 seconds count and indexes will be updated
+        self.__updatetime: int = 60
 
     def __str__(self) -> str:
         """
@@ -109,9 +111,9 @@ class Device:
             if new_value:
                 self.__name = new_value
             else:
-                logging.error("Value is empty.")
+                logging.error("Name value is empty.")
         else:
-            logging.error("Value format is incorrect.")
+            logging.error("Name value format is incorrect.")
 
     @property
     def address(self) -> str:
@@ -199,6 +201,17 @@ class Device:
     def indexes(self) -> List[int]:
         return self.__indexes
 
+    @property
+    def updatetime(self) -> int:
+        return self.__updatetime
+
+    @updatetime.setter
+    def updatetime(self, new_value: int) -> None:
+        if type(new_value) == int:
+            self.__updatetime = new_value
+        else:
+            logging.error("Incorrect format of update time.")
+
     # ----------------------------------
     # Public methods declaration section
     # ----------------------------------
@@ -214,7 +227,7 @@ class Device:
                 community=self.__community,
                 version=self.__version
             )
-            self.populate()
+            self.__populate()
             return True
         except Exception as err:
             logging.error("Could not connect to device.")
@@ -235,15 +248,6 @@ class Device:
 
         self.disconnect()
         self.connect()
-
-    def populate(self) -> None:
-        """
-        Populates device fields with necessary data
-        """
-
-        self.__description = self.__get_description()
-        self.__count = self.__get_if_count()
-        self.__indexes = self.__get_if_indexes()
 
     def get_if_type(self, port: int) -> int:
         """ Returns type of the given interface """
@@ -354,6 +358,15 @@ class Device:
     # -----------------------------------
     # Рrivate methods declaration section
     # -----------------------------------
+    def __populate(self) -> None:
+        """
+        Populates device fields with necessary data
+        """
+
+        self.__description = self.__get_description()
+        self.__count = self.__get_if_count()
+        self.__indexes = self.__get_if_indexes()
+
     def __get_description(self) -> str:
         """
         Returns device description
