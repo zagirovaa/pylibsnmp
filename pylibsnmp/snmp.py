@@ -17,6 +17,7 @@ OIDS: Dict[str, str] = {
     "IF_DESCRIPTION":       "1.3.6.1.2.1.2.2.1.2.",
     "IF_TYPE":              "1.3.6.1.2.1.2.2.1.3.",
     "IF_SPEED":             "1.3.6.1.2.1.2.2.1.5.",
+    "IF_PHYS_ADDRESS":      "1.3.6.1.2.1.2.2.1.6.",
     "IF_ADMIN_STATUS":      "1.3.6.1.2.1.2.2.1.7.",
     "IF_OPER_STATUS":       "1.3.6.1.2.1.2.2.1.8.",
     "IF_LAST_CHANGE":       "1.3.6.1.2.1.2.2.1.9.",
@@ -35,6 +36,9 @@ OIDS: Dict[str, str] = {
     "IF_HIGH_SPEED":        "1.3.6.1.2.1.31.1.1.1.15."
 }
 
+# The type of interface, distinguished according to
+# the physical/link protocol(s) immediately `below'
+# the network layer in the protocol stack
 IF_TYPES: Dict[str, str] = {
     "1":    "other",
     "2":    "regular1822",

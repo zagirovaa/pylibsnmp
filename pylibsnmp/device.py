@@ -10,7 +10,7 @@ from typing import Dict, Tuple, List
 from easysnmp import Session
 
 import snmp
-from helpers import is_ip_address
+from helpers import is_ip_address, get_mac_from_octets
 
 
 class Device:
@@ -24,7 +24,6 @@ class Device:
     COEFFICIENT: int = 1000000
     # Supported SNMP versions
     VERSIONS: Tuple[int] = (1, 2)
-
     # SNMP default parameters
     DEFAULT: Dict[str, any] = {
         "ADDRESS": "127.0.0.1",
@@ -32,6 +31,8 @@ class Device:
         "COMMUNITY": "public",
         "VERSION": 2
     }
+    # Delimiters allowed in mac address
+    DELIMITERS = (":", "-", ".")
 
     def __init__(
             self,
@@ -217,9 +218,6 @@ class Device:
             logging.error(err)
         return False
 
-    def get_if_admin_status(self, port: int) -> int:
-        pass
-
     def get_if_in_bandwidth(self, port: int) -> int:
         """
         Returns number of inboud packets on the given interface
@@ -276,6 +274,43 @@ class Device:
             )
         return port_bandwidth
 
+    def get_if_phys_address(self, port: int, delimiter: str = ":") -> str:
+        """
+        Returns physical address of the given interface
+        """
+
+        phys_address: str = ""
+        if self.__count > 0 and port in self.__indexes:
+            if delimiter in Device.DELIMITERS:
+                try:
+                    snmp_data = self.__session.get(
+                        snmp.OIDS["IF_PHYS_ADDRESS"] + str(port)
+                    )
+                    print(snmp_data)
+                except Exception as err:
+                    logging.error(
+                        "Could not get physical address of the interface."
+                    )
+                    logging.error(err)
+                else:
+                    if snmp_data.value:
+                        phys_address = get_mac_from_octets(
+                            snmp_data.value, delimiter
+                        )
+                    else:
+                        logging.error(
+                            "Interface has no physical address."
+                        )
+            else:
+                logging.error(
+                    "Invalid delimiter for physical address."
+                )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return phys_address
+
     def get_if_speed(self, port: int) -> int:
         """
         Returns speed of the given interface
@@ -306,7 +341,7 @@ class Device:
             )
         return port_speed
 
-    def get_if_type(self, port: int) -> int:
+    def get_if_type(self, port: int) -> str:
         """
         Returns type of the given interface
         """
