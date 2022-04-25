@@ -9,8 +9,8 @@ from typing import Dict, Tuple, List
 
 from easysnmp import Session
 
-import snmp
-from helpers import is_ip_address, get_mac_from_octets
+from pylibsnmp import snmp
+from pylibsnmp import helpers
 
 
 class Device:
@@ -45,7 +45,7 @@ class Device:
         """
 
         # Ip address must be set and have an appropriate format
-        if not address or not is_ip_address(address):
+        if not address or not helpers.is_ip_address(address):
             address = Device.DEFAULT["ADDRESS"]
         self.__address: str = address
         # Community must be set
@@ -104,7 +104,7 @@ class Device:
     def address(self, new_value: str) -> None:
         if type(new_value) == str:
             new_value.strip()
-            if new_value and is_ip_address(new_value):
+            if new_value and helpers.is_ip_address(new_value):
                 self.__address = new_value
             else:
                 logging.error(
@@ -351,7 +351,7 @@ class Device:
                     logging.error(err)
                 else:
                     if snmp_data.value:
-                        phys_address = get_mac_from_octets(
+                        phys_address = helpers.get_mac_from_octets(
                             snmp_data.value, delimiter
                         )
                     else:

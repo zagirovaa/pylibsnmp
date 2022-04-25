@@ -2,12 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-from device import Device
+from pylibsnmp import device
 
 
-dev = Device()
+dev = device.Device()
 dev.community = "public"
-dev.address = "192.168.10.206"
+dev.address = "192.168.7.1"
 dev.version = 2
 if dev.connect():
     print(dev)
