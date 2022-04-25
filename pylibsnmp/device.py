@@ -275,6 +275,28 @@ class Device:
             )
         return port_bandwidth
 
+    def get_if_description(self, port: int) -> str:
+        """
+        Returns description of the given interface
+        """
+
+        description: str = ""
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_DESCRIPTION"] + str(port)
+                )
+            except Exception as err:
+                logging.error("Could not get interface description.")
+                logging.error(err)
+            else:
+                description = snmp_data.value
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return description
+
     def get_if_oper_status(self, port: int) -> str:
         """
         Returns operation status of the given interface
