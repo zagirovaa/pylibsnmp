@@ -246,7 +246,7 @@ class Device:
                 "No interface or given interface number is incorrect."
             )
         return status
-    
+
     def get_if_description(self, port: int) -> str:
         """
         Returns description of the given interface

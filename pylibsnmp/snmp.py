@@ -40,6 +40,28 @@ OIDS: Dict[str, str] = {
     # "IF_OUT_BROADCAST":     "1.3.6.1.2.1.31.1.1.1.5."
 }
 
+# The desired admin state of the interface.
+# The testing(3) state indicates that no
+# operational packets can be passed.
+IF_ADMIN_STATES: Dict[str, str] = {
+    "1": "up",
+    "2": "down",
+    "3": "testing"
+}
+
+# The desired operational state of the interface.
+# The testing(3) state indicates that no
+# operational packets can be passed.
+IF_OPER_STATES: Dict[str, str] = {
+    "1": "up",
+    "2": "down",
+    "3": "testing",
+    "4": "unknown",
+    "5": "dormant",
+    "6": "notPresent",
+    "7": "lowerLayerDown"
+}
+
 # The type of interface, distinguished according to
 # the physical/link protocol(s) immediately `below'
 # the network layer in the protocol stack
@@ -143,233 +165,203 @@ IF_TYPES: Dict[str, str] = {
     "97":   "vdsl",
     "98":   "iso88025CRFPInt",
     "99":   "myrinet",
-    "100":  "voiceEM"
-    #    voiceFXO(101),      -- voice Foreign Exchange Office
-    #    voiceFXS(102),      -- voice Foreign Exchange Station
-    #    voiceEncap(103),    -- voice encapsulation
-    #    voiceOverIp(104),   -- voice over IP encapsulation
-    #    atmDxi(105),        -- ATM DXI
-    #    atmFuni(106),       -- ATM FUNI
-    #    atmIma (107),       -- ATM IMA
-    #    pppMultilinkBundle(108), -- PPP Multilink Bundle
-    #    ipOverCdlc (109),   -- IBM ipOverCdlc
-    #    ipOverClaw (110),   -- IBM Common Link Access to Workstn
-    #    stackToStack (111), -- IBM stackToStack
-    #    virtualIpAddress (112), -- IBM VIPA
-    #    mpc (113),          -- IBM multi-protocol channel support
-    #    ipOverAtm (114),    -- IBM ipOverAtm
-    #    iso88025Fiber (115), -- ISO 802.5j Fiber Token Ring
-    #    tdlc (116),	       -- IBM twinaxial data link control
-    #    gigabitEthernet (117), -- Obsoleted via RFC3635
-    #                           -- ethernetCsmacd (6) should be used instead
-    #    hdlc (118),         -- HDLC
-    #    lapf (119),	       -- LAP F
-    #    v37 (120),	       -- V.37
-    #    x25mlp (121),       -- Multi-Link Protocol
-    #    x25huntGroup (122), -- X25 Hunt Group
-    #    transpHdlc (123),   -- Transp HDLC
-    #    interleave (124),   -- Interleave channel
-    #    fast (125),         -- Fast channel
-    #    ip (126),	       -- IP (for APPN HPR in IP networks)
-    #    docsCableMaclayer (127),  -- CATV Mac Layer
-    #    docsCableDownstream (128), -- CATV Downstream interface
-    #    docsCableUpstream (129),  -- CATV Upstream interface
-    #    a12MppSwitch (130), -- Avalon Parallel Processor
-    #    tunnel (131),       -- Encapsulation interface
-    #    coffee (132),       -- coffee pot
-    #    ces (133),          -- Circuit Emulation Service
-    #    atmSubInterface (134), -- ATM Sub Interface
-    #    l2vlan (135),       -- Layer 2 Virtual LAN using 802.1Q
-    #    l3ipvlan (136),     -- Layer 3 Virtual LAN using IP
-    #    l3ipxvlan (137),    -- Layer 3 Virtual LAN using IPX
-    #    digitalPowerline (138), -- IP over Power Lines
-    #    mediaMailOverIp (139), -- Multimedia Mail over IP
-    #    dtm (140),        -- Dynamic syncronous Transfer Mode
-    #    dcn (141),    -- Data Communications Network
-    #    ipForward (142),    -- IP Forwarding Interface
-    #    msdsl (143),       -- Multi-rate Symmetric DSL
-    #    ieee1394 (144), -- IEEE1394 High Performance Serial Bus
-    #    if-gsn (145),       --   HIPPI-6400
-    #    dvbRccMacLayer (146), -- DVB-RCC MAC Layer
-    #    dvbRccDownstream (147),  -- DVB-RCC Downstream Channel
-    #    dvbRccUpstream (148),  -- DVB-RCC Upstream Channel
-    #    atmVirtual (149),   -- ATM Virtual Interface
-    #    mplsTunnel (150),   -- MPLS Tunnel Virtual Interface
-    #    srp (151),	-- Spatial Reuse Protocol
-    #    voiceOverAtm (152),  -- Voice Over ATM
-    #    voiceOverFrameRelay (153),   -- Voice Over Frame Relay
-    #    idsl (154),		-- Digital Subscriber Loop over ISDN
-    #    compositeLink (155),  -- Avici Composite Link Interface
-    #    ss7SigLink (156),     -- SS7 Signaling Link
-    #    propWirelessP2P (157),  --  Prop. P2P wireless interface
-    #    frForward (158),    -- Frame Forward Interface
-    #    rfc1483 (159),	-- Multiprotocol over ATM AAL5
-    #    usb (160),		-- USB Interface
-    #    ieee8023adLag (161),  -- IEEE 802.3ad Link Aggregate
-    #    bgppolicyaccounting (162), -- BGP Policy Accounting
-    #    frf16MfrBundle (163), -- FRF .16 Multilink Frame Relay
-    #    h323Gatekeeper (164), -- H323 Gatekeeper
-    #    h323Proxy (165), -- H323 Voice and Video Proxy
-    #    mpls (166), -- MPLS
-    #    mfSigLink (167), -- Multi-frequency signaling link
-    #    hdsl2 (168), -- High Bit-Rate DSL - 2nd generation
-    #    shdsl (169), -- Multirate HDSL2
-    #    ds1FDL (170), -- Facility Data Link 4Kbps on a DS1
-    #    pos (171), -- Packet over SONET/SDH Interface
-    #    dvbAsiIn (172), -- DVB-ASI Input
-    #    dvbAsiOut (173), -- DVB-ASI Output
-    #    plc (174), -- Power Line Communtications
-    #    nfas (175), -- Non Facility Associated Signaling
-    #    tr008 (176), -- TR008
-    #    gr303RDT (177), -- Remote Digital Terminal
-    #    gr303IDT (178), -- Integrated Digital Terminal
-    #    isup (179), -- ISUP
-    #    propDocsWirelessMaclayer (180), -- Cisco proprietary Maclayer
-    #    propDocsWirelessDownstream (181), -- Cisco proprietary Downstream
-    #    propDocsWirelessUpstream (182), -- Cisco proprietary Upstream
-    #    hiperlan2 (183), -- HIPERLAN Type 2 Radio Interface
-    #    propBWAp2Mp (184), -- PropBroadbandWirelessAccesspt2multipt
-    #              -- use of this iftype for IEEE 802.16 WMAN
-    #              -- interfaces as per IEEE Std 802.16f is
-    #              -- deprecated and ifType 237 should be used instead.
-    #    sonetOverheadChannel (185), -- SONET Overhead Channel
-    #    digitalWrapperOverheadChannel (186), -- Digital Wrapper
-    #    aal2 (187), -- ATM adaptation layer 2
-    #    radioMAC (188), -- MAC layer over radio links
-    #    atmRadio (189), -- ATM over radio links
-    #    imt (190), -- Inter Machine Trunks
-    #    mvl (191), -- Multiple Virtual Lines DSL
-    #    reachDSL (192), -- Long Reach DSL
-    #    frDlciEndPt (193), -- Frame Relay DLCI End Point
-    #    atmVciEndPt (194), -- ATM VCI End Point
-    #    opticalChannel (195), -- Optical Channel
-    #    opticalTransport (196), -- Optical Transport
-    #    propAtm (197), --  Proprietary ATM
-    #    voiceOverCable (198), -- Voice Over Cable Interface
-    #    infiniband (199), -- Infiniband
-    #    teLink (200), -- TE Link
-    #    q2931 (201), -- Q.2931
-    #    virtualTg (202), -- Virtual Trunk Group
-    #    sipTg (203), -- SIP Trunk Group
-    #    sipSig (204), -- SIP Signaling
-    #    docsCableUpstreamChannel (205), -- CATV Upstream Channel
-    #    econet (206), -- Acorn Econet
-    #    pon155 (207), -- FSAN 155Mb Symetrical PON interface
-    #    pon622 (208), -- FSAN622Mb Symetrical PON interface
-    #    bridge (209), -- Transparent bridge interface
-    #    linegroup (210), -- Interface common to multiple lines
-    #    voiceEMFGD (211), -- voice E&M Feature Group D
-    #    voiceFGDEANA (212), -- voice FGD Exchange Access North American
-    #    voiceDID (213), -- voice Direct Inward Dialing
-    #    mpegTransport (214), -- MPEG transport interface
-    #    sixToFour (215), -- 6to4 interface (DEPRECATED)
-    #    gtp (216), -- GTP (GPRS Tunneling Protocol)
-    #    pdnEtherLoop1 (217), -- Paradyne EtherLoop 1
-    #    pdnEtherLoop2 (218), -- Paradyne EtherLoop 2
-    #    opticalChannelGroup (219), -- Optical Channel Group
-    #    homepna (220), -- HomePNA ITU-T G.989
-    #    gfp (221), -- Generic Framing Procedure (GFP)
-    #    ciscoISLvlan (222), -- Layer 2 Virtual LAN using Cisco ISL
-    #    actelisMetaLOOP (223), -- Acteleis proprietary MetaLOOP High Speed Link
-    #    fcipLink (224), -- FCIP Link
-    #    rpr (225), -- Resilient Packet Ring Interface Type
-    #    qam (226), -- RF Qam Interface
-    #    lmp (227), -- Link Management Protocol
-    #    cblVectaStar (228), -- Cambridge Broadband Networks Limited VectaStar
-    #    docsCableMCmtsDownstream (229), -- CATV Modular CMTS Downstream Interface
-    #    adsl2 (230), -- Asymmetric Digital Subscriber Loop Version 2
-    #                 -- (DEPRECATED/OBSOLETED - please use adsl2plus 238 instead)
-    #    macSecControlledIF (231), -- MACSecControlled
-    #    macSecUncontrolledIF (232), -- MACSecUncontrolled
-    #    aviciOpticalEther (233), -- Avici Optical Ethernet Aggregate
-    #    atmbond (234), -- atmbond
-    #    voiceFGDOS (235), -- voice FGD Operator Services
-    #    mocaVersion1 (236), -- MultiMedia over Coax Alliance (MoCA) Interface
-    #              -- as documented in information provided privately to IANA
-    #    ieee80216WMAN (237), -- IEEE 802.16 WMAN interface
-    #    adsl2plus (238), -- Asymmetric Digital Subscriber Loop Version 2,
-    #                    -- Version 2 Plus and all variants
-    #    dvbRcsMacLayer (239), -- DVB-RCS MAC Layer
-    #    dvbTdm (240), -- DVB Satellite TDM
-    #    dvbRcsTdma (241), -- DVB-RCS TDMA
-    #    x86Laps (242), -- LAPS based on ITU-T X.86/Y.1323
-    #    wwanPP (243), -- 3GPP WWAN
-    #    wwanPP2 (244), -- 3GPP2 WWAN
-    #    voiceEBS (245), -- voice P-phone EBS physical interface
-    #    ifPwType (246), -- Pseudowire interface type
-    #    ilan (247), -- Internal LAN on a bridge per IEEE 802.1ap
-    #    pip (248), -- Provider Instance Port on a bridge per IEEE 802.1ah PBB
-    #    aluELP (249), -- Alcatel-Lucent Ethernet Link Protection
-    #    gpon (250), -- Gigabit-capable passive optical networks (G-PON) as per ITU-T G.948
-    #    vdsl2 (251), -- Very high speed digital subscriber line Version 2 (as per ITU-T Recommendation G.993.2)
-    #    capwapDot11Profile (252), -- WLAN Profile Interface
-    #    capwapDot11Bss (253), -- WLAN BSS Interface
-    #    capwapWtpVirtualRadio (254), -- WTP Virtual Radio Interface
-    #    bits (255), -- bitsport
-    #    docsCableUpstreamRfPort (256), -- DOCSIS CATV Upstream RF Port
-    #    cableDownstreamRfPort (257), -- CATV downstream RF port
-    #    vmwareVirtualNic (258), -- VMware Virtual Network Interface
-    #    ieee802154 (259), -- IEEE 802.15.4 WPAN interface
-    #    otnOdu (260), -- OTN Optical Data Unit
-    #    otnOtu (261), -- OTN Optical channel Transport Unit
-    #    ifVfiType (262), -- VPLS Forwarding Instance Interface Type
-    #    g9981 (263), -- G.998.1 bonded interface
-    #    g9982 (264), -- G.998.2 bonded interface
-    #    g9983 (265), -- G.998.3 bonded interface
-    #    aluEpon (266), -- Ethernet Passive Optical Networks (E-PON)
-    #    aluEponOnu (267), -- EPON Optical Network Unit
-    #    aluEponPhysicalUni (268), -- EPON physical User to Network interface
-    #    aluEponLogicalLink (269), -- The emulation of a point-to-point link over the EPON layer
-    #    aluGponOnu (270), -- GPON Optical Network Unit
-    #    aluGponPhysicalUni (271), -- GPON physical User to Network interface
-    #    vmwareNicTeam (272), -- VMware NIC Team
-    #    docsOfdmDownstream (277), -- CATV Downstream OFDM interface
-    #    docsOfdmaUpstream (278), -- CATV Upstream OFDMA interface
-    #    gfast (279), -- G.fast port
-    #    sdci (280), -- SDCI (IO-Link)
-    #    xboxWireless (281), -- Xbox wireless
-    #    fastdsl (282), -- FastDSL
-    #    docsCableScte55d1FwdOob (283), -- Cable SCTE 55-1 OOB Forward Channel
-    #    docsCableScte55d1RetOob (284), -- Cable SCTE 55-1 OOB Return Channel
-    #    docsCableScte55d2DsOob (285), -- Cable SCTE 55-2 OOB Downstream Channel
-    #    docsCableScte55d2UsOob (286), -- Cable SCTE 55-2 OOB Upstream Channel
-    #    docsCableNdf (287), -- Cable Narrowband Digital Forward
-    #    docsCableNdr (288), -- Cable Narrowband Digital Return
-    #    ptm (289), -- Packet Transfer Mode
-    #    ghn (290), -- G.hn port
-    #    otnOtsi (291), -- Optical Tributary Signal
-    #    otnOtuc (292), -- OTN OTUCn
-    #    otnOduc (293), -- OTN ODUC
-    #    otnOtsig (294), -- OTN OTUC Signal
-    #    microwaveCarrierTermination (295), -- air interface of a single microwave carrier
-    #    microwaveRadioLinkTerminal (296), -- radio link interface for one or several aggregated microwave carriers
-    #    ieee8021axDrni (297), -- IEEE 802.1AX Distributed Resilient Network Interface
-    #    ax25 (298), -- AX.25 network interfaces
-    #    ieee19061nanocom (299), -- Nanoscale and Molecular Communication
-    #    cpri (300), -- Common Public Radio Interface
-    #    omni (301), -- Overlay Multilink Network Interface (OMNI)
-    #    roe (302), -- Radio over Ethernet Interface
-    #    p2pOverLan (303) -- Point to Point over LAN interface
-}
-
-# The desired admin state of the interface.
-# The testing(3) state indicates that no
-# operational packets can be passed.
-IF_ADMIN_STATES: Dict[str, str] = {
-    "1": "up",
-    "2": "down",
-    "3": "testing"
-}
-
-# The desired operational state of the interface.
-# The testing(3) state indicates that no
-# operational packets can be passed.
-IF_OPER_STATES: Dict[str, str] = {
-    "1": "up",
-    "2": "down",
-    "3": "testing",
-    "4": "unknown",
-    "5": "dormant",
-    "6": "notPresent",
-    "7": "lowerLayerDown"
+    "100":  "voiceEM",
+    "101":  "voiceFXO",
+    "102":  "voiceFXS",
+    "103":  "voiceEncap",
+    "104":  "voiceOverIp",
+    "105":  "atmDxi",
+    "106":  "atmFuni",
+    "107":  "atmIma",
+    "108":  "pppMultilinkBundle",
+    "109":  "ipOverCdlc",
+    "110":  "ipOverClaw",
+    "111":  "stackToStack",
+    "112":  "virtualIpAddress",
+    "113":  "mpc",
+    "114":  "ipOverAtm",
+    "115":  "iso88025Fiber",
+    "116":  "tdlc",
+    "117":  "gigabitEthernet",
+    "118":  "hdlc",
+    "119":  "lapf",
+    "120":  "v37",
+    "121":  "x25mlp",
+    "122":  "x25huntGroup",
+    "123":  "transpHdlc",
+    "124":  "interleave",
+    "125":  "fast",
+    "126":  "ip",
+    "127":  "docsCableMaclayer",
+    "128":  "docsCableDownstream",
+    "129":  "docsCableUpstream",
+    "130":  "a12MppSwitch",
+    "131":  "tunnel",
+    "132":  "coffee",
+    "133":  "ces",
+    "134":  "atmSubInterface",
+    "135":  "l2vlan",
+    "136":  "l3ipvlan",
+    "137":  "l3ipxvlan",
+    "138":  "digitalPowerline",
+    "139":  "mediaMailOverIp",
+    "140":  "dtm",
+    "141":  "dcn",
+    "142":  "ipForward",
+    "143":  "msdsl",
+    "144":  "ieee1394",
+    "145":  "if-gsn",
+    "146":  "dvbRccMacLayer",
+    "147":  "dvbRccDownstream",
+    "148":  "dvbRccUpstream",
+    "149":  "atmVirtual",
+    "150":  "mplsTunnel",
+    "151":  "srp",
+    "152":  "voiceOverAtm",
+    "153":  "voiceOverFrameRelay",
+    "154":  "idsl",
+    "155":  "compositeLink",
+    "156":  "ss7SigLink",
+    "157":  "propWirelessP2P",
+    "158":  "frForward",
+    "159":  "rfc1483",
+    "160":  "usb",
+    "161":  "ieee8023adLag",
+    "162":  "bgppolicyaccounting",
+    "163":  "frf16MfrBundle",
+    "164":  "h323Gatekeeper",
+    "165":  "h323Proxy",
+    "166":  "mpls",
+    "167":  "mfSigLink",
+    "168":  "hdsl2",
+    "169":  "shdsl",
+    "170":  "ds1FDL",
+    "171":  "pos",
+    "172":  "dvbAsiIn",
+    "173":  "dvbAsiOut",
+    "174":  "plc",
+    "175":  "nfas",
+    "177":  "gr303RDT",
+    "178":  "gr303IDT",
+    "179":  "isup",
+    "180":  "propDocsWirelessMaclayer",
+    "181":  "propDocsWirelessDownstream",
+    "182":  "propDocsWirelessUpstream",
+    "183":  "hiperlan2",
+    "184":  "propBWAp2Mp",
+    "185":  "sonetOverheadChannel",
+    "186":  "digitalWrapperOverheadChannel",
+    "187":  "aal2",
+    "188":  "radioMAC",
+    "189":  "atmRadio",
+    "190":  "imt",
+    "191":  "mvl",
+    "192":  "reachDSL",
+    "193":  "frDlciEndPt",
+    "194":  "atmVciEndPt",
+    "195":  "opticalChannel",
+    "196":  "opticalTransport",
+    "197":  "propAtm",
+    "198":  "voiceOverCable",
+    "199":  "infiniband",
+    "200":  "teLink",
+    "201":  "q2931",
+    "202":  "virtualTg",
+    "203":  "sipTg",
+    "204":  "sipSig",
+    "205":  "docsCableUpstreamChannel",
+    "206":  "econet",
+    "207":  "pon155",
+    "208":  "pon622",
+    "209":  "bridge",
+    "210":  "linegroup",
+    "211":  "voiceEMFGD",
+    "212":  "voiceFGDEANA",
+    "213":  "voiceDID",
+    "214":  "mpegTransport",
+    "215":  "sixToFour",
+    "216":  "gtp",
+    "217":  "pdnEtherLoop1",
+    "218":  "pdnEtherLoop2",
+    "219":  "opticalChannelGroup",
+    "220":  "homepna",
+    "221":  "gfp",
+    "222":  "ciscoISLvlan",
+    "223":  "actelisMetaLOOP",
+    "224":  "fcipLink",
+    "225":  "rpr",
+    "226":  "qam",
+    "227":  "lmp",
+    "228":  "cblVectaStar",
+    "229":  "docsCableMCmtsDownstream",
+    "230":  "adsl2",
+    "231":  "macSecControlledIF",
+    "232":  "macSecUncontrolledIF",
+    "233":  "aviciOpticalEther",
+    "234":  "atmbond",
+    "235":  "voiceFGDOS",
+    "236":  "mocaVersion1",
+    "237":  "ieee80216WMAN",
+    "238":   "adsl2plus",
+    "239":  "dvbRcsMacLayer",
+    "240":  "dvbTdm",
+    "241":  "dvbRcsTdma",
+    "242":  "x86Laps",
+    "243":  "wwanPP",
+    "244":  "wwanPP2",
+    "245":  "voiceEBS",
+    "246":  "ifPwType",
+    "247":  "ilan",
+    "248":  "pip",
+    "249":  "aluELP",
+    "250":  "gpon",
+    "251":  "vdsl2",
+    "252":  "capwapDot11Profile",
+    "253":  "capwapDot11Bss",
+    "254":  "capwapWtpVirtualRadio",
+    "255":  "bits",
+    "256":  "docsCableUpstreamRfPort",
+    "257":  "cableDownstreamRfPort",
+    "258":  "vmwareVirtualNic",
+    "259":  "ieee802154",
+    "260":  "otnOdu",
+    "261":  "otnOtu",
+    "262":  "ifVfiType",
+    "263":  "g9981",
+    "264":  "g9982",
+    "265":  "g9983",
+    "266":  "aluEpon",
+    "267":  "aluEponOnu",
+    "268":  "aluEponPhysicalUni",
+    "269":  "aluEponLogicalLink",
+    "270":  "aluGponOnu",
+    "271":  "aluGponPhysicalUni",
+    "272":  "vmwareNicTeam",
+    "277":  "docsOfdmDownstream",
+    "278":  "docsOfdmaUpstream",
+    "279":  "gfast",
+    "280":  "sdci",
+    "281":  "xboxWireless",
+    "282":  "fastdsl",
+    "283":  "docsCableScte55d1FwdOob",
+    "284":  "docsCableScte55d1RetOob",
+    "285":  "docsCableScte55d2DsOob",
+    "286":  "docsCableScte55d2UsOob",
+    "287":  "docsCableNdf",
+    "288":  "docsCableNdr",
+    "289":  "ptm",
+    "290":  "ghn",
+    "291":  "otnOtsi",
+    "292":  "otnOtuc",
+    "293":  "otnOduc",
+    "294":  "otnOtsig",
+    "295":  "microwaveCarrierTermination",
+    "296":  "microwaveRadioLinkTerminal",
+    "297":  "ieee8021axDrni",
+    "298":  "ax25",
+    "299":  "ieee19061nanocom",
+    "300":  "cpri",
+    "301":  "omni",
+    "302":  "roe",
+    "303":  "p2pOverLan"
 }
