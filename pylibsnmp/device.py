@@ -540,35 +540,25 @@ class NetDevice:
         Returns device contact
         """
 
-        result = ""
-        try:
-            snmp_data = self.__session.get(
-                snmp.OIDS["SYS_CONTACT"]
-            )
-        except Exception as err:
-            logging.error("Could not get device contact.")
-            logging.error(err)
-        else:
-            result = snmp_data.value
-        return result
+        return self.__get_sys_data(
+            "SYS_CONTACT",
+            "Could not get device contact."
+        )
 
     def __get_if_count(self) -> int:
         """
         Returns number of interfaces
         """
 
-        result = 0
-        try:
-            snmp_data = self.__session.get(snmp.OIDS["IF_NUMBER"])
-        except Exception as err:
-            logging.error("Could not get number of interfaces.")
-            logging.error(err)
+        result = ""
+        value = self.__get_sys_data(
+            "IF_NUMBER",
+            "Could not get number of interfaces."
+        )
+        if value.isdigit():
+            result = int(value)
         else:
-            value = snmp_data.value
-            if value.isdigit():
-                result = int(value)
-            else:
-                logging.error("Value format is incorrect.")
+            logging.error("Value format is incorrect.")
         return result
 
     def __get_description(self) -> str:
@@ -576,17 +566,10 @@ class NetDevice:
         Returns device description
         """
 
-        result = ""
-        try:
-            snmp_data = self.__session.get(
-                snmp.OIDS["SYS_DECRIPTION"]
-            )
-        except Exception as err:
-            logging.error("Could not get device description.")
-            logging.error(err)
-        else:
-            result = snmp_data.value
-        return result
+        return self.__get_sys_data(
+            "SYS_DECRIPTION",
+            "Could not get device description."
+        )
 
     def __get_if_indexes(self) -> List[int]:
         """
@@ -625,30 +608,29 @@ class NetDevice:
         Returns device location
         """
 
-        result = ""
-        try:
-            snmp_data = self.__session.get(
-                snmp.OIDS["SYS_LOCATION"]
-            )
-        except Exception as err:
-            logging.error("Could not get device location.")
-            logging.error(err)
-        else:
-            result = snmp_data.value
-        return result
+        return self.__get_sys_data(
+            "SYS_LOCATION",
+            "Could not get device location."
+        )
 
     def __get_name(self) -> str:
         """
         Returns device name
         """
 
+        return self.__get_sys_data(
+            "SYS_NAME",
+            "Could not get device name."
+        )
+
+    def __get_sys_data(self, snmp_oid, error_msg) -> any:
         result = ""
         try:
             snmp_data = self.__session.get(
-                snmp.OIDS["SYS_NAME"]
+                snmp.OIDS[snmp_oid]
             )
         except Exception as err:
-            logging.error("Could not get device name.")
+            logging.error(error_msg)
             logging.error(err)
         else:
             result = snmp_data.value
@@ -660,15 +642,11 @@ class NetDevice:
         """
 
         result = ""
-        try:
-            snmp_data = self.__session.get(
-                snmp.OIDS["SYS_UPTIME"]
-            )
-        except Exception as err:
-            logging.error("Could not get device uptime.")
-            logging.error(err)
-        else:
-            # snmp_data.value is the time (in hundredths of a second) since the
-            # network management portion of the system was last re-initialized
-            result = str(timedelta(seconds=(int(snmp_data.value)) / 100))
+        value = self.__get_sys_data(
+            "SYS_UPTIME",
+            "Could not get device uptime."
+        )
+        # result is the time (in hundredths of a second) since the
+        # network management portion of the system was last re-initialized
+        result = str(timedelta(seconds=(int(value)) / 100))
         return result
