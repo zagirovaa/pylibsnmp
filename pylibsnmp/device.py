@@ -65,6 +65,7 @@ class Device:
         self.__contact: str = ""
         self.__count: int = 0
         self.__description: str = ""
+        self.__iftypes: List = []
         self.__indexes: List[int] = []
         self.__location: str = ""
         self.__name: str = ""
@@ -169,6 +170,10 @@ class Device:
     @property
     def description(self) -> str:
         return self.__description
+
+    @property
+    def iftypes(self) -> List[str]:
+        return self.__iftypes
 
     @property
     def indexes(self) -> List[int]:
@@ -460,6 +465,7 @@ class Device:
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
+        self.__iftypes = self.__get_if_types()
         self.__location = self.__get_location()
         self.__name = self.__get_name()
         self.__uptime = self.__get_uptime()
@@ -536,6 +542,18 @@ class Device:
             else:
                 logging.error("No interface index found.")
         return if_index
+
+    def __get_if_types(self) -> List[str]:
+        """
+        Returns list of interface types
+        """
+
+        if_types: List = []
+        for index in self.__indexes:
+            if_type = self.get_if_type(index)
+            if if_type not in if_types:
+                if_types.append(if_type)
+        return if_types
 
     def __get_location(self) -> str:
         """
