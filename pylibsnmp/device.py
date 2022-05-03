@@ -5,7 +5,7 @@
 from __future__ import annotations
 from datetime import timedelta
 import logging
-from typing import Dict, Tuple, List
+from typing import List
 
 from easysnmp import Session
 
@@ -21,11 +21,11 @@ class NetDevice:
     # Interface speed coefficient
     # For 10 Mb/s speed we get value of 10000000
     # speed x 1000000
-    COEFFICIENT: int = 1000000
+    COEFFICIENT = 1000000
     # Supported SNMP versions
-    VERSIONS: Tuple[int] = (1, 2)
+    VERSIONS = (1, 2)
     # SNMP default parameters
-    DEFAULT: Dict[str, any] = {
+    DEFAULT = {
         "ADDRESS": "127.0.0.1",
         "PORT": 161,
         "COMMUNITY": "public",
@@ -36,50 +36,50 @@ class NetDevice:
 
     def __init__(
             self,
-            address: str = DEFAULT["ADDRESS"],
-            port: int = DEFAULT["PORT"],
-            community: str = DEFAULT["COMMUNITY"],
-            version: int = DEFAULT["VERSION"]) -> None:
+            address=DEFAULT["ADDRESS"],
+            port=DEFAULT["PORT"],
+            community=DEFAULT["COMMUNITY"],
+            version=DEFAULT["VERSION"]) -> None:
         """
         Constructor
         """
 
         # Ip address must be set and have an appropriate format
-        if not address or not helpers.is_ip_address(address):
+        if not address.strip() or not helpers.is_ip_address(address):
             address = NetDevice.DEFAULT["ADDRESS"]
-        self.__address: str = address
+        self.__address = address
         # Community must be set
         if not community.strip():
             community = NetDevice.DEFAULT["COMMUNITY"]
-        self.__community: str = community
+        self.__community = community
         # Port must be set and have value between 1 and 65535
         if 1 > port > 65535:
             port = NetDevice.DEFAULT["PORT"]
-        self.__port: int = port
+        self.__port = port
         # Version must be set and be one of supported
         if version not in NetDevice.VERSIONS:
             version = NetDevice.DEFAULT["VERSION"]
-        self.__version: int = version
+        self.__version = version
 
-        self.__autoupdate: bool = False
-        self.__contact: str = ""
-        self.__count: int = 0
-        self.__description: str = ""
-        self.__types: List[str] = []
-        self.__indexes: List[int] = []
-        self.__location: str = ""
-        self.__name: str = ""
-        self.__session: Session = None
+        self.__autoupdate = False
+        self.__contact = ""
+        self.__count = 0
+        self.__description = ""
+        self.__types = []
+        self.__indexes = []
+        self.__location = ""
+        self.__name = ""
+        self.__session = None
         # Each 60 seconds count and indexes will be updated
-        self.__updatetime: int = 60
-        self.__uptime: str = ""
+        self.__updatetime = 60
+        self.__uptime = ""
 
     def __str__(self) -> str:
         """
         Returns information about object in human readable format
         """
 
-        value: str = (
+        value = (
             "Name:          {0}\n"
             "Address:       {1}\n"
             "Port:          {2}\n"
@@ -102,7 +102,7 @@ class NetDevice:
         return self.__address
 
     @address.setter
-    def address(self, new_value: str) -> None:
+    def address(self, new_value) -> None:
         if type(new_value) == str:
             new_value.strip()
             if new_value and helpers.is_ip_address(new_value):
@@ -119,7 +119,7 @@ class NetDevice:
         return self.__community
 
     @community.setter
-    def community(self, new_value: str) -> None:
+    def community(self, new_value) -> None:
         if type(new_value) == str:
             new_value.strip()
             if new_value:
@@ -134,7 +134,7 @@ class NetDevice:
         return self.__port
 
     @port.setter
-    def port(self, new_value: int) -> None:
+    def port(self, new_value) -> None:
         if 1 > new_value > 65535:
             self.__version = new_value
         else:
@@ -145,7 +145,7 @@ class NetDevice:
         return self.__version
 
     @version.setter
-    def version(self, new_value: int) -> None:
+    def version(self, new_value) -> None:
         if new_value in NetDevice.VERSIONS:
             self.__version = new_value
         else:
@@ -156,7 +156,7 @@ class NetDevice:
         return self.__autoupdate
 
     @autoupdate.setter
-    def autoupdate(self, new_value: bool) -> None:
+    def autoupdate(self, new_value) -> None:
         self.__autoupdate = new_value
 
     @property
@@ -192,7 +192,7 @@ class NetDevice:
         return self.__updatetime
 
     @updatetime.setter
-    def updatetime(self, new_value: int) -> None:
+    def updatetime(self, new_value) -> None:
         if type(new_value) == int:
             self.__updatetime = new_value
         else:
@@ -540,7 +540,7 @@ class NetDevice:
         Returns device contact
         """
 
-        contact: str = ""
+        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS["SYS_CONTACT"]
@@ -549,34 +549,34 @@ class NetDevice:
             logging.error("Could not get device contact.")
             logging.error(err)
         else:
-            contact = snmp_data.value
-        return contact
+            result = snmp_data.value
+        return result
 
     def __get_if_count(self) -> int:
         """
         Returns number of interfaces
         """
 
-        if_count: int = 0
+        result = 0
         try:
             snmp_data = self.__session.get(snmp.OIDS["IF_NUMBER"])
         except Exception as err:
             logging.error("Could not get number of interfaces.")
             logging.error(err)
         else:
-            data = snmp_data.value
-            if data.isdigit():
-                if_count = int(data)
+            value = snmp_data.value
+            if value.isdigit():
+                result = int(value)
             else:
                 logging.error("Value format is incorrect.")
-        return if_count
+        return result
 
     def __get_description(self) -> str:
         """
         Returns device description
         """
 
-        description: str = ""
+        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS["SYS_DECRIPTION"]
@@ -585,15 +585,15 @@ class NetDevice:
             logging.error("Could not get device description.")
             logging.error(err)
         else:
-            description = snmp_data.value
-        return description
+            result = snmp_data.value
+        return result
 
     def __get_if_indexes(self) -> List[int]:
         """
         Returns list of interfaces indexes
         """
 
-        if_index: List[int] = []
+        result = []
         try:
             interfaces = self.__session.walk(snmp.OIDS["IF_INDEX"])
         except Exception as err:
@@ -603,29 +603,29 @@ class NetDevice:
             index_count: int = len(interfaces)
             if index_count > 0:
                 for interface in interfaces:
-                    if_index.append(int(interface.value))
+                    result.append(int(interface.value))
             else:
                 logging.error("No interface index found.")
-        return if_index
+        return result
 
     def __get_if_types(self) -> List[str]:
         """
         Returns list of interface types
         """
 
-        if_types: List = []
+        result = []
         for index in self.__indexes:
             if_type = self.get_if_type(index)
-            if if_type not in if_types:
-                if_types.append(if_type)
-        return if_types
+            if if_type not in result:
+                result.append(if_type)
+        return result
 
     def __get_location(self) -> str:
         """
         Returns device location
         """
 
-        location: str = ""
+        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS["SYS_LOCATION"]
@@ -634,15 +634,15 @@ class NetDevice:
             logging.error("Could not get device location.")
             logging.error(err)
         else:
-            location = snmp_data.value
-        return location
+            result = snmp_data.value
+        return result
 
     def __get_name(self) -> str:
         """
         Returns device name
         """
 
-        name: str = ""
+        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS["SYS_NAME"]
@@ -651,15 +651,15 @@ class NetDevice:
             logging.error("Could not get device name.")
             logging.error(err)
         else:
-            name = snmp_data.value
-        return name
+            result = snmp_data.value
+        return result
 
     def __get_uptime(self) -> str:
         """
         Returns device uptime
         """
 
-        uptime: str = ""
+        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS["SYS_UPTIME"]
@@ -670,5 +670,5 @@ class NetDevice:
         else:
             # snmp_data.value is the time (in hundredths of a second) since the
             # network management portion of the system was last re-initialized
-            uptime = str(timedelta(seconds=(int(snmp_data.value)) / 100))
-        return uptime
+            result = str(timedelta(seconds=(int(snmp_data.value)) / 100))
+        return result
