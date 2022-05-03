@@ -9,4 +9,4 @@ snmp_settings = ("public", "192.168.10.206", 2)
 device = NetDevice()
 device.community, device.address, device.version = snmp_settings
 if device.connect():
-    print(device.get_if_mtu(device.indexes[0]))
+    print(device.get_if_last_change((device.indexes[0])))

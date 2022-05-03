@@ -302,6 +302,39 @@ class NetDevice:
             )
         return port_bandwidth
 
+    def get_if_last_change(self, port: int) -> str:
+        """
+        Returns when the given interface entered
+        its operational state for the last time
+        """
+
+        last_change: str = ""
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_LAST_CHANGE"] + str(port)
+                )
+            except Exception as err:
+                logging.error(
+                    "Could not get last change time of port number {}.".format(
+                        str(port)
+                    )
+                )
+                logging.error(err)
+            else:
+                value = snmp_data.value
+                if value.isdigit():
+                    last_change = str(timedelta(seconds=(int(value)) / 100))
+                else:
+                    logging.error(
+                        "Last change time has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return last_change
+
     def get_if_mtu(self, port: int) -> int:
         """
         Returns mtu value of the given interface
