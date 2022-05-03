@@ -13,7 +13,7 @@ from pylibsnmp import snmp
 from pylibsnmp import helpers
 
 
-class Device:
+class NetDevice:
     """
     Class for creating snmp enabled network devices
     """
@@ -46,26 +46,26 @@ class Device:
 
         # Ip address must be set and have an appropriate format
         if not address or not helpers.is_ip_address(address):
-            address = Device.DEFAULT["ADDRESS"]
+            address = NetDevice.DEFAULT["ADDRESS"]
         self.__address: str = address
         # Community must be set
         if not community.strip():
-            community = Device.DEFAULT["COMMUNITY"]
+            community = NetDevice.DEFAULT["COMMUNITY"]
         self.__community: str = community
         # Port must be set and have value between 1 and 65535
         if 1 > port > 65535:
-            port = Device.DEFAULT["PORT"]
+            port = NetDevice.DEFAULT["PORT"]
         self.__port: int = port
         # Version must be set and be one of supported
-        if version not in Device.VERSIONS:
-            version = Device.DEFAULT["VERSION"]
+        if version not in NetDevice.VERSIONS:
+            version = NetDevice.DEFAULT["VERSION"]
         self.__version: int = version
 
         self.__autoupdate: bool = False
         self.__contact: str = ""
         self.__count: int = 0
         self.__description: str = ""
-        self.__iftypes: List = []
+        self.__types: List[str] = []
         self.__indexes: List[int] = []
         self.__location: str = ""
         self.__name: str = ""
@@ -146,7 +146,7 @@ class Device:
 
     @version.setter
     def version(self, new_value: int) -> None:
-        if new_value in Device.VERSIONS:
+        if new_value in NetDevice.VERSIONS:
             self.__version = new_value
         else:
             logging.error("Incorrect format or unsupported version of snmp.")
@@ -172,10 +172,6 @@ class Device:
         return self.__description
 
     @property
-    def iftypes(self) -> List[str]:
-        return self.__iftypes
-
-    @property
     def indexes(self) -> List[int]:
         return self.__indexes
 
@@ -186,6 +182,10 @@ class Device:
     @property
     def name(self) -> str:
         return self.__name
+
+    @property
+    def types(self) -> List[str]:
+        return self.__types
 
     @property
     def updatetime(self) -> int:
@@ -302,6 +302,38 @@ class Device:
             )
         return port_bandwidth
 
+    def get_if_mtu(self, port: int) -> int:
+        """
+        Returns mtu value of the given interface
+        """
+
+        mtu: int = 0
+        if self.__count > 0 and port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS["IF_MTU"] + str(port)
+                )
+            except Exception as err:
+                logging.error(
+                    "Could not get mtu value of port number {}.".format(
+                        str(port)
+                    )
+                )
+                logging.error(err)
+            else:
+                value = snmp_data.value
+                if value.isdigit():
+                    mtu = int(value)
+                else:
+                    logging.error(
+                        "Mtu value has to be in digital format."
+                    )
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return mtu
+
     def get_if_oper_status(self, port: int) -> str:
         """
         Returns operation status of the given interface
@@ -366,7 +398,7 @@ class Device:
 
         phys_address: str = ""
         if self.__count > 0 and port in self.__indexes:
-            if delimiter in Device.DELIMITERS:
+            if delimiter in NetDevice.DELIMITERS:
                 try:
                     snmp_data = self.__session.get(
                         snmp.OIDS["IF_PHYS_ADDRESS"] + str(port)
@@ -413,8 +445,8 @@ class Device:
                 interface_value = snmp_data.value
                 if interface_value.isdigit():
                     interface_value = int(interface_value)
-                    if interface_value > Device.COEFFICIENT:
-                        port_speed = interface_value / Device.COEFFICIENT
+                    if interface_value > NetDevice.COEFFICIENT:
+                        port_speed = interface_value / NetDevice.COEFFICIENT
                 else:
                     logging.error(
                         "Interface number has to be in digital format."
@@ -465,7 +497,7 @@ class Device:
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
-        self.__iftypes = self.__get_if_types()
+        self.__types = self.__get_if_types()
         self.__location = self.__get_location()
         self.__name = self.__get_name()
         self.__uptime = self.__get_uptime()

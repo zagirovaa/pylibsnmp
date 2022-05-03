@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 
-from pylibsnmp import device
+from pylibsnmp.device import NetDevice
 
 
-dev = device.Device()
-dev.community = "iMAXPublic"
-dev.address = "192.168.12.25"
-dev.version = 2
-if dev.connect():
-    print(dev.iftypes)
+snmp_settings = ("public", "192.168.10.206", 2)
+device = NetDevice()
+device.community, device.address, device.version = snmp_settings
+if device.connect():
+    print(device.get_if_mtu(device.indexes[0]))

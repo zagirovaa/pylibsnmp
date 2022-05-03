@@ -22,7 +22,7 @@ OIDS: Dict[str, str] = {
     "IF_PHYS_ADDRESS":      "1.3.6.1.2.1.2.2.1.6.",
     "IF_ADMIN_STATUS":      "1.3.6.1.2.1.2.2.1.7.",
     "IF_OPER_STATUS":       "1.3.6.1.2.1.2.2.1.8.",
-    # "IF_LAST_CHANGE":       "1.3.6.1.2.1.2.2.1.9.",
+    "IF_LAST_CHANGE":       "1.3.6.1.2.1.2.2.1.9.",
     "IF_IN_OCTETS":         "1.3.6.1.2.1.2.2.1.10.",
     # "IF_IN_UNICAST":        "1.3.6.1.2.1.2.2.1.11.",
     # "IF_IN_NON_UNICAST":    "1.3.6.1.2.1.2.2.1.12.",

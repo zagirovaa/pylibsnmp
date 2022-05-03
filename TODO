@@ -1,10 +1,12 @@
-- Last change
+- ifLastChange
 
-- High speed
+- ifHighSpeed
 
-- In and out octets
+- ifSpeed
 
 - In and out unicasts
+
+- In and out nonunicasts
 
 - In and out discards
 
@@ -15,3 +17,4 @@
 - In and out broadcasts
 
 - Autoupdate
+
