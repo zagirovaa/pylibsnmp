@@ -229,78 +229,50 @@ class NetDevice:
         Returns admin status of the given interface
         """
 
-        status: str = ""
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_ADMIN_STATUS"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface admin status.")
-                logging.error(err)
-            else:
-                value = snmp_data.value
-                if value.isdigit():
-                    status = snmp.IF_ADMIN_STATES[value]
-                else:
-                    logging.error(
-                        "Interface admin status has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_ADMIN_STATUS",
+            port,
+            "Could not get interface admin status."
+        )
+        if value.isdigit():
+            result = snmp.IF_ADMIN_STATES[value]
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Interface admin status " +
+                "has to be in digital format."
             )
-        return status
+        return result
 
     def get_if_description(self, port: int) -> str:
         """
         Returns description of the given interface
         """
 
-        description: str = ""
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_DESCRIPTION"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface description.")
-                logging.error(err)
-            else:
-                description = snmp_data.value
-        else:
-            logging.error(
-                "No interface or given interface number is incorrect."
-            )
-        return description
+        return self.__get_if_data(
+            "IF_DESCRIPTION",
+            port,
+            "Could not get interface description."
+        )
 
     def get_if_in_bandwidth(self, port: int) -> int:
         """
         Returns number of inboud packets on the given interface
         """
 
-        port_bandwidth: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_IN_OCTETS"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get number of inboud bytes.")
-                logging.error(err)
-            else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    port_bandwidth = int(interface_value)
-                else:
-                    logging.error(
-                        "Number of inbound bytes has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_IN_OCTETS",
+            port,
+            "Could not get number of inboud bytes."
+        )
+        if value.isdigit():
+            result = int(value)
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Number of inbound bytes has to be in digital format."
             )
-        return port_bandwidth
+        return result
 
     def get_if_last_change(self, port: int) -> str:
         """
@@ -308,128 +280,88 @@ class NetDevice:
         its operational state for the last time
         """
 
-        last_change: str = ""
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_LAST_CHANGE"] + str(port)
-                )
-            except Exception as err:
-                logging.error(
-                    "Could not get last change time of port number {}.".format(
-                        str(port)
-                    )
-                )
-                logging.error(err)
-            else:
-                value = snmp_data.value
-                if value.isdigit():
-                    last_change = str(timedelta(seconds=(int(value)) / 100))
-                else:
-                    logging.error(
-                        "Last change time has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_LAST_CHANGE",
+            port,
+            "Could not get last change time of port number {}.".format(
+                str(port)
+            )
+        )
+        if value.isdigit():
+            result = str(timedelta(seconds=(int(value)) / 100))
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Last change time has to be in digital format."
             )
-        return last_change
+        return result
 
     def get_if_mtu(self, port: int) -> int:
         """
         Returns mtu value of the given interface
         """
 
-        mtu: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_MTU"] + str(port)
-                )
-            except Exception as err:
-                logging.error(
-                    "Could not get mtu value of port number {}.".format(
-                        str(port)
-                    )
-                )
-                logging.error(err)
-            else:
-                value = snmp_data.value
-                if value.isdigit():
-                    mtu = int(value)
-                else:
-                    logging.error(
-                        "Mtu value has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_MTU",
+            port,
+            "Could not get mtu value of port number {}.".format(
+                str(port)
+            )
+        )
+        if value.isdigit():
+            result = int(value)
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Mtu value has to be in digital format."
             )
-        return mtu
+        return result
 
     def get_if_oper_status(self, port: int) -> str:
         """
         Returns operation status of the given interface
         """
 
-        status: str = ""
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_OPER_STATUS"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface operation status.")
-                logging.error(err)
-            else:
-                value = snmp_data.value
-                if value.isdigit():
-                    status = snmp.IF_OPER_STATES[value]
-                else:
-                    logging.error(
-                        "Interface operation status " +
-                        "has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_OPER_STATUS",
+            port,
+            "Could not get interface operation status."
+        )
+        if value.isdigit():
+            result = snmp.IF_OPER_STATES[value]
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Interface operation status " +
+                "has to be in digital format."
             )
-        return status
+        return result
 
     def get_if_out_bandwidth(self, port: int) -> int:
         """
         Returns number of outbound bytes on the given interface
         """
 
-        port_bandwidth: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_OUT_OCTETS"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get number of outboud bytes.")
-                logging.error(err)
-            else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    port_bandwidth = int(interface_value)
-                else:
-                    logging.error(
-                        "Number of outbound bytes has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_OUT_OCTETS",
+            port,
+            "Could not get number of outboud bytes."
+        )
+        if value.isdigit():
+            result = int(value)
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Number of outbound bytes has to be in digital format."
             )
-        return port_bandwidth
+        return result
 
     def get_if_phys_address(self, port: int, delimiter: str = ":") -> str:
         """
         Returns physical address of the given interface
         """
 
-        phys_address: str = ""
+        phys_address = ""
         if self.__count > 0 and port in self.__indexes:
             if delimiter in NetDevice.DELIMITERS:
                 try:
@@ -465,58 +397,40 @@ class NetDevice:
         Returns speed of the given interface
         """
 
-        port_speed: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_SPEED"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface speed.")
-                logging.error(err)
-            else:
-                interface_value = snmp_data.value
-                if interface_value.isdigit():
-                    interface_value = int(interface_value)
-                    if interface_value > NetDevice.COEFFICIENT:
-                        port_speed = interface_value / NetDevice.COEFFICIENT
-                else:
-                    logging.error(
-                        "Interface number has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_SPEED",
+            port,
+            "Could not get interface speed."
+        )
+        if value.isdigit():
+            result = int(value)
+            if result > NetDevice.COEFFICIENT:
+                result = result / NetDevice.COEFFICIENT
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Interface number has to be in digital format."
             )
-        return port_speed
+        return result
 
     def get_if_type(self, port: int) -> str:
         """
         Returns type of the given interface
         """
 
-        port_type: int = 0
-        if self.__count > 0 and port in self.__indexes:
-            try:
-                snmp_data = self.__session.get(
-                    snmp.OIDS["IF_TYPE"] + str(port)
-                )
-            except Exception as err:
-                logging.error("Could not get interface type.")
-                logging.error(err)
-            else:
-                value = snmp_data.value
-                if value.isdigit():
-                    port_type = snmp.IF_TYPES[value]
-                else:
-                    logging.error(
-                        "Interface type has to be in digital format."
-                    )
+        result = ""
+        value = self.__get_if_data(
+            "IF_TYPE",
+            port,
+            "Could not get interface type."
+        )
+        if value.isdigit():
+            result = snmp.IF_TYPES[value]
         else:
             logging.error(
-                "No interface or given interface number is incorrect."
+                "Interface type has to be in digital format."
             )
-        return port_type
+        return result
 
     # -----------------------------------
     # Рrivate methods declaration section
@@ -571,6 +485,29 @@ class NetDevice:
             "Could not get device description."
         )
 
+    def __get_if_data(
+        self,
+        snmp_oid: str,
+        if_port: int,
+        error_msg: str
+    ) -> any:
+        result = ""
+        if self.__count > 0 and if_port in self.__indexes:
+            try:
+                snmp_data = self.__session.get(
+                    snmp.OIDS[snmp_oid] + str(if_port)
+                )
+            except Exception as err:
+                logging.error(error_msg)
+                logging.error(err)
+            else:
+                result = snmp_data.value
+        else:
+            logging.error(
+                "No interface or given interface number is incorrect."
+            )
+        return result
+
     def __get_if_indexes(self) -> List[int]:
         """
         Returns list of interfaces indexes
@@ -623,7 +560,7 @@ class NetDevice:
             "Could not get device name."
         )
 
-    def __get_sys_data(self, snmp_oid, error_msg) -> any:
+    def __get_sys_data(self, snmp_oid: str, error_msg: str) -> any:
         result = ""
         try:
             snmp_data = self.__session.get(
@@ -646,7 +583,7 @@ class NetDevice:
             "SYS_UPTIME",
             "Could not get device uptime."
         )
-        # result is the time (in hundredths of a second) since the
+        # Value is the time (in hundredths of a second) since the
         # network management portion of the system was last re-initialized
         result = str(timedelta(seconds=(int(value)) / 100))
         return result
