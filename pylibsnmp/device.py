@@ -21,44 +21,44 @@ class NetDevice:
     # Interface speed coefficient
     # For 10 Mb/s speed we get value of 10000000
     # speed x 1000000
-    COEFFICIENT = 1000000
+    __COEFFICIENT = 1000000
     # Supported SNMP versions
-    VERSIONS = (1, 2)
+    __VERSIONS = (1, 2)
     # SNMP default parameters
-    DEFAULT = {
+    __DEFAULT = {
         "ADDRESS": "127.0.0.1",
         "PORT": 161,
         "COMMUNITY": "public",
         "VERSION": 2
     }
     # Delimiters allowed in mac address
-    DELIMITERS = (":", "-", ".")
+    __DELIMITERS = (":", "-", ".")
 
     def __init__(
             self,
-            address=DEFAULT["ADDRESS"],
-            port=DEFAULT["PORT"],
-            community=DEFAULT["COMMUNITY"],
-            version=DEFAULT["VERSION"]) -> None:
+            address=__DEFAULT["ADDRESS"],
+            port=__DEFAULT["PORT"],
+            community=__DEFAULT["COMMUNITY"],
+            version=__DEFAULT["VERSION"]) -> None:
         """
         Constructor
         """
 
         # Ip address must be set and have an appropriate format
         if not address.strip() or not helpers.is_ip_address(address):
-            address = NetDevice.DEFAULT["ADDRESS"]
+            address = NetDevice.__DEFAULT["ADDRESS"]
         self.__address = address
         # Community must be set
         if not community.strip():
-            community = NetDevice.DEFAULT["COMMUNITY"]
+            community = NetDevice.__DEFAULT["COMMUNITY"]
         self.__community = community
         # Port must be set and have value between 1 and 65535
         if 1 > port > 65535:
-            port = NetDevice.DEFAULT["PORT"]
+            port = NetDevice.__DEFAULT["PORT"]
         self.__port = port
         # Version must be set and be one of supported
-        if version not in NetDevice.VERSIONS:
-            version = NetDevice.DEFAULT["VERSION"]
+        if version not in NetDevice.__VERSIONS:
+            version = NetDevice.__DEFAULT["VERSION"]
         self.__version = version
 
         self.__autoupdate = False
@@ -70,7 +70,7 @@ class NetDevice:
         self.__location = ""
         self.__name = ""
         self.__session = None
-        # Each 60 seconds count and indexes will be updated
+        # Each 60 seconds device related data will be populated
         self.__updatetime = 60
         self.__uptime = ""
 
@@ -146,7 +146,7 @@ class NetDevice:
 
     @version.setter
     def version(self, new_value) -> None:
-        if new_value in NetDevice.VERSIONS:
+        if new_value in NetDevice.__VERSIONS:
             self.__version = new_value
         else:
             logging.error("Incorrect format or unsupported version of snmp.")
@@ -361,9 +361,9 @@ class NetDevice:
         Returns physical address of the given interface
         """
 
-        phys_address = ""
+        result = ""
         if self.__count > 0 and port in self.__indexes:
-            if delimiter in NetDevice.DELIMITERS:
+            if delimiter in NetDevice.__DELIMITERS:
                 try:
                     snmp_data = self.__session.get(
                         snmp.OIDS["IF_PHYS_ADDRESS"] + str(port)
@@ -374,9 +374,10 @@ class NetDevice:
                     )
                     logging.error(err)
                 else:
-                    if snmp_data.value:
-                        phys_address = helpers.get_mac_from_octets(
-                            snmp_data.value, delimiter
+                    value = snmp_data.value.strip()
+                    if value:
+                        result = helpers.get_mac_from_octets(
+                            value, delimiter
                         )
                     else:
                         logging.error(
@@ -390,7 +391,7 @@ class NetDevice:
             logging.error(
                 "No interface or given interface number is incorrect."
             )
-        return phys_address
+        return result
 
     def get_if_speed(self, port: int) -> int:
         """
@@ -405,8 +406,8 @@ class NetDevice:
         )
         if value.isdigit():
             result = int(value)
-            if result > NetDevice.COEFFICIENT:
-                result = result / NetDevice.COEFFICIENT
+            if result > NetDevice.__COEFFICIENT:
+                result = result / NetDevice.__COEFFICIENT
         else:
             logging.error(
                 "Interface number has to be in digital format."

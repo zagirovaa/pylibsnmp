@@ -9,7 +9,7 @@ import sys
 
 
 # Used in logging module
-APP_NAME: str = os.path.splitext(os.path.basename(sys.argv[0]))[0]
+APP_NAME = os.path.splitext(os.path.basename(sys.argv[0]))[0]
 # Logging configuration section
 logging.basicConfig(
     level=logging.INFO,
