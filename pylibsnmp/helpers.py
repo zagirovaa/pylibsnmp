@@ -3,7 +3,6 @@
 
 
 from __future__ import annotations
-from math import floor
 
 
 def get_bits(octets: int) -> int:
@@ -41,12 +40,12 @@ def get_speed(bits: int) -> int:
     Gbits/s, Mbits/s, Kbits/s or Bits/s
     """
 
-    if bits > 1024 * 1024 * 1024:
-        speed = floor((bits / (1024 * 1024 * 1024)))
-    elif bits > 1024 * 1024:
-        speed = floor(bits / (1024 * 1024))
-    elif bits > 1024:
-        speed = floor(bits / 1024)
+    if bits >= 1024 * 1024 * 1024:
+        speed = round(bits / (1024 * 1024 * 1024), 1)
+    elif bits >= 1024 * 1024:
+        speed = round(bits / (1024 * 1024), 1)
+    elif bits >= 1024:
+        speed = round(bits / 1024, 1)
     else:
         speed = bits
     return speed
@@ -57,11 +56,11 @@ def get_unit(bits: int) -> str:
     Returns unit type according to bits count
     """
 
-    if bits > 1024 * 1024 * 1024:
+    if bits >= 1024 * 1024 * 1024:
         unit = "Gbits/s"
-    elif bits > 1024 * 1024:
+    elif bits >= 1024 * 1024:
         unit = "Mbits/s"
-    elif bits > 1024:
+    elif bits >= 1024:
         unit = "Kbits/s"
     else:
         unit = "Bits/s"
@@ -76,7 +75,11 @@ def is_ip_address(address: str) -> bool:
     result = address.strip().split(".")
     if len(result) == 4:
         for octet in range(0, 4):
-            if not result[octet].isdigit or 0 > int(result[octet]) > 255:
+            if (
+                not result[octet].isdigit or
+                int(result[octet]) > 255 or
+                int(result[octet]) < 0
+            ):
                 return False
         return True
     return False

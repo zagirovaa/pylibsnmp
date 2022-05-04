@@ -491,7 +491,7 @@ class NetDevice:
         snmp_oid: str,
         if_port: int,
         error_msg: str
-    ) -> any:
+    ) -> str:
         result = ""
         if self.__count > 0 and if_port in self.__indexes:
             try:
@@ -561,7 +561,7 @@ class NetDevice:
             "Could not get device name."
         )
 
-    def __get_sys_data(self, snmp_oid: str, error_msg: str) -> any:
+    def __get_sys_data(self, snmp_oid: str, error_msg: str) -> str:
         result = ""
         try:
             snmp_data = self.__session.get(
