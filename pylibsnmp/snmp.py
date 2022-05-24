@@ -24,20 +24,20 @@ OIDS: Dict[str, str] = {
     "IF_OPER_STATUS":       "1.3.6.1.2.1.2.2.1.8.",
     "IF_LAST_CHANGE":       "1.3.6.1.2.1.2.2.1.9.",
     "IF_IN_OCTETS":         "1.3.6.1.2.1.2.2.1.10.",
-    # "IF_IN_UNICAST":        "1.3.6.1.2.1.2.2.1.11.",
-    # "IF_IN_NON_UNICAST":    "1.3.6.1.2.1.2.2.1.12.",
-    # "IF_IN_DISCARDS":       "1.3.6.1.2.1.2.2.1.13.",
+    "IF_IN_UNICAST":        "1.3.6.1.2.1.2.2.1.11.",
+    "IF_IN_NON_UNICAST":    "1.3.6.1.2.1.2.2.1.12.",
+    "IF_IN_DISCARDS":       "1.3.6.1.2.1.2.2.1.13.",
     "IF_IN_ERRORS":         "1.3.6.1.2.1.2.2.1.14.",
     "IF_UNKNOWN_PROTOS":    "1.3.6.1.2.1.2.2.1.15.",
     "IF_OUT_OCTETS":        "1.3.6.1.2.1.2.2.1.16.",
-    # "IF_OUT_UNICAST":       "1.3.6.1.2.1.2.2.1.17.",
-    # "IF_OUT_NON_UNICAST":   "1.3.6.1.2.1.2.2.1.18.",
-    # "IF_OUT_DISCARDS":      "1.3.6.1.2.1.2.2.1.19.",
+    "IF_OUT_UNICAST":       "1.3.6.1.2.1.2.2.1.17.",
+    "IF_OUT_NON_UNICAST":   "1.3.6.1.2.1.2.2.1.18.",
+    "IF_OUT_DISCARDS":      "1.3.6.1.2.1.2.2.1.19.",
     "IF_OUT_ERRORS":        "1.3.6.1.2.1.2.2.1.20.",
-    # "IF_IN_MULTICAST":      "1.3.6.1.2.1.31.1.1.1.2.",
-    # "IF_IN_BROADCAST":      "1.3.6.1.2.1.31.1.1.1.3.",
-    # "IF_OUT_MULTICAST":     "1.3.6.1.2.1.31.1.1.1.4.",
-    # "IF_OUT_BROADCAST":     "1.3.6.1.2.1.31.1.1.1.5."
+    "IF_IN_MULTICAST":      "1.3.6.1.2.1.31.1.1.1.8.",
+    "IF_IN_BROADCAST":      "1.3.6.1.2.1.31.1.1.1.9.",
+    "IF_OUT_MULTICAST":     "1.3.6.1.2.1.31.1.1.1.12.",
+    "IF_OUT_BROADCAST":     "1.3.6.1.2.1.31.1.1.1.13."
 }
 
 # The desired admin state of the interface.

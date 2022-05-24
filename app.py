@@ -9,4 +9,4 @@ snmp_settings = ("public", "192.168.10.206", 2)
 device = NetDevice()
 device.community, device.address, device.version = snmp_settings
 if device.connect():
-    print(device.get_if_out_errors(1))
+    print(device)

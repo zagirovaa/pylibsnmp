@@ -260,7 +260,7 @@ class NetDevice:
         Returns number of inboud packets on the given interface
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_IN_OCTETS",
             port,
@@ -274,12 +274,32 @@ class NetDevice:
             )
         return result
 
+    def get_if_in_broadcast(self, port: int) -> int:
+        """
+        Returns number of inbound broadcast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_IN_BROADCAST",
+            port,
+            "Could not get number of inbound broadcast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Inbound broadcast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
     def get_if_in_errors(self, port: int) -> int:
         """
         Returns number of inbound packets that contained errors
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_IN_ERRORS",
             port,
@@ -294,22 +314,82 @@ class NetDevice:
             )
         return result
 
-    def get_if_out_errors(self, port: int) -> int:
+    def get_if_in_discards(self, port: int) -> int:
         """
-        Returns number of outbound packets that contained errors
+        Returns number of inbound discard packets
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
-            "IF_OUT_ERRORS",
+            "IF_IN_DISCARDS",
             port,
-            "Could not get number of outbound packets with errors."
+            "Could not get number of inbound discard packets."
         )
         if value.isdigit():
             result = int(value)
         else:
             logging.error(
-                "Outbound packets number with errors " +
+                "Inbound discard packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_in_multicast(self, port: int) -> int:
+        """
+        Returns number of inbound multicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_IN_MULTICAST",
+            port,
+            "Could not get number of inbound multicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Inbound multicast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_in_non_unicast(self, port: int) -> int:
+        """
+        Returns number of inbound nonunicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_IN_NON_UNICAST",
+            port,
+            "Could not get number of inbound nonunicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Inbound nonunicast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_in_unicast(self, port: int) -> int:
+        """
+        Returns number of inbound unicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_IN_UNICAST",
+            port,
+            "Could not get number of inbound unicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Inbound unicast packets number " +
                 "has to be in digital format."
             )
         return result
@@ -341,7 +421,7 @@ class NetDevice:
         Returns mtu value of the given interface
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_MTU",
             port,
@@ -382,7 +462,7 @@ class NetDevice:
         Returns number of outbound bytes on the given interface
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_OUT_OCTETS",
             port,
@@ -393,6 +473,126 @@ class NetDevice:
         else:
             logging.error(
                 "Number of outbound bytes has to be in digital format."
+            )
+        return result
+
+    def get_if_out_broadcast(self, port: int) -> int:
+        """
+        Returns number of outbound broadcast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_BROADCAST",
+            port,
+            "Could not get number of outbound broadcast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound broadcast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_errors(self, port: int) -> int:
+        """
+        Returns number of outbound packets that contained errors
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_ERRORS",
+            port,
+            "Could not get number of outbound packets with errors."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound packets number with errors " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_discards(self, port: int) -> int:
+        """
+        Returns number of outbound discard packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_DISCARDS",
+            port,
+            "Could not get number of outbound discard packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound discard packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_multicast(self, port: int) -> int:
+        """
+        Returns number of outbound multicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_MULTICAST",
+            port,
+            "Could not get number of outbound multicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound multicast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_non_unicast(self, port: int) -> int:
+        """
+        Returns number of outbound nonunicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_NON_UNICAST",
+            port,
+            "Could not get number of outbound nonunicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound nonunicast packets number " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_unicast(self, port: int) -> int:
+        """
+        Returns number of outbound unicast packets
+        """
+
+        result = 0
+        value = self.__get_if_data(
+            "IF_OUT_UNICAST",
+            port,
+            "Could not get number of outbound unicast packets."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound unicast packets number " +
+                "has to be in digital format."
             )
         return result
 
@@ -438,7 +638,7 @@ class NetDevice:
         Returns speed of the given interface
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_SPEED",
             port,
@@ -479,7 +679,7 @@ class NetDevice:
         were discarded because of an unknown or unsupported protocol
         """
 
-        result = ""
+        result = 0
         value = self.__get_if_data(
             "IF_UNKNOWN_PROTOS",
             port,
