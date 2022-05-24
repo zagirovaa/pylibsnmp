@@ -274,6 +274,46 @@ class NetDevice:
             )
         return result
 
+    def get_if_in_errors(self, port: int) -> int:
+        """
+        Returns number of inbound packets that contained errors
+        """
+
+        result = ""
+        value = self.__get_if_data(
+            "IF_IN_ERRORS",
+            port,
+            "Could not get number of inbound packets with errors."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Inbound packets number with errors " +
+                "has to be in digital format."
+            )
+        return result
+
+    def get_if_out_errors(self, port: int) -> int:
+        """
+        Returns number of outbound packets that contained errors
+        """
+
+        result = ""
+        value = self.__get_if_data(
+            "IF_OUT_ERRORS",
+            port,
+            "Could not get number of outbound packets with errors."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Outbound packets number with errors " +
+                "has to be in digital format."
+            )
+        return result
+
     def get_if_last_change(self, port: int) -> str:
         """
         Returns when the given interface entered
@@ -430,6 +470,27 @@ class NetDevice:
         else:
             logging.error(
                 "Interface type has to be in digital format."
+            )
+        return result
+
+    def get_if_unknown_protos(self, port: int) -> int:
+        """
+        Returns the number of packets received via the interface which
+        were discarded because of an unknown or unsupported protocol
+        """
+
+        result = ""
+        value = self.__get_if_data(
+            "IF_UNKNOWN_PROTOS",
+            port,
+            "Could not get number of packets with unknown protocols."
+        )
+        if value.isdigit():
+            result = int(value)
+        else:
+            logging.error(
+                "Packets number with unknown protocols " +
+                "has to be in digital format."
             )
         return result
 

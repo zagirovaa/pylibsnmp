@@ -1,12 +1,8 @@
-- ifHighSpeed
-
 - In and out unicasts
 
 - In and out nonunicasts
 
 - In and out discards
-
-- In and out errors
 
 - In and out multicasts
 
