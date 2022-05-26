@@ -102,7 +102,7 @@ class NetDevice:
         return self.__address
 
     @address.setter
-    def address(self, new_value) -> None:
+    def address(self, new_value: str) -> None:
         if type(new_value) == str:
             new_value.strip()
             if new_value and helpers.is_ip_address(new_value):
@@ -112,14 +112,14 @@ class NetDevice:
                     "IP address is empty or has an incorrect format."
                 )
         else:
-            logging.error("IP address has to be in text string format.")
+            logging.error("IP address has to be in text format.")
 
     @property
     def community(self) -> str:
         return self.__community
 
     @community.setter
-    def community(self, new_value) -> None:
+    def community(self, new_value: str) -> None:
         if type(new_value) == str:
             new_value.strip()
             if new_value:
@@ -134,8 +134,8 @@ class NetDevice:
         return self.__port
 
     @port.setter
-    def port(self, new_value) -> None:
-        if 1 > new_value > 65535:
+    def port(self, new_value: int) -> None:
+        if new_value >= 1 and new_value <= 65535:
             self.__version = new_value
         else:
             logging.error("Port number is out of range.")
@@ -145,7 +145,7 @@ class NetDevice:
         return self.__version
 
     @version.setter
-    def version(self, new_value) -> None:
+    def version(self, new_value: int) -> None:
         if new_value in NetDevice.__VERSIONS:
             self.__version = new_value
         else:
@@ -156,7 +156,7 @@ class NetDevice:
         return self.__autoupdate
 
     @autoupdate.setter
-    def autoupdate(self, new_value) -> None:
+    def autoupdate(self, new_value: bool) -> None:
         self.__autoupdate = new_value
 
     @property
@@ -192,7 +192,7 @@ class NetDevice:
         return self.__updatetime
 
     @updatetime.setter
-    def updatetime(self, new_value) -> None:
+    def updatetime(self, new_value: int) -> None:
         if type(new_value) == int:
             self.__updatetime = new_value
         else:
