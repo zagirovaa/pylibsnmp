@@ -473,7 +473,7 @@ class NetDevice:
         )
         result = int(value)
         if result > NetDevice.__COEFFICIENT:
-            result = result / NetDevice.__COEFFICIENT
+            result = int(result / NetDevice.__COEFFICIENT)
         return str(result)
 
     def get_if_type(self, port: int) -> str:
@@ -508,7 +508,7 @@ class NetDevice:
         Populates device fields with necessary data
         """
 
-        self.__count = self.__get_if_count()
+        self.__count = int(self.__get_if_count())
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
