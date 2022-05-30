@@ -553,7 +553,6 @@ class NetDevice:
         if_port: int,
         error_msg: str
     ) -> str:
-        result = ""
         if self.__count > 0 and if_port in self.__indexes:
             try:
                 snmp_data = self.__session.get(
@@ -563,32 +562,31 @@ class NetDevice:
                 logging.error(error_msg)
                 logging.error(err)
             else:
-                result = snmp_data.value
+                return snmp_data.value
         else:
             logging.error(
                 "No interface or given interface number is incorrect."
             )
-        return result
 
     def __get_if_indexes(self) -> List[int]:
         """
         Returns list of interfaces indexes
         """
 
-        result = []
         try:
             interfaces = self.__session.walk(snmp.OIDS["IF_INDEX"])
         except Exception as err:
             logging.error("Could not get list of interface indexes.")
             logging.error(err)
         else:
+            result = []
             index_count: int = len(interfaces)
             if index_count > 0:
                 for interface in interfaces:
                     result.append(int(interface.value))
             else:
                 logging.error("No interface index found.")
-        return result
+            return result
 
     def __get_if_types(self) -> List[str]:
         """
@@ -623,7 +621,6 @@ class NetDevice:
         )
 
     def __get_sys_data(self, snmp_oid: str, error_msg: str) -> str:
-        result = ""
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS[snmp_oid]
@@ -632,8 +629,7 @@ class NetDevice:
             logging.error(error_msg)
             logging.error(err)
         else:
-            result = snmp_data.value
-        return result
+            return snmp_data.value
 
     def __get_uptime(self) -> str:
         """

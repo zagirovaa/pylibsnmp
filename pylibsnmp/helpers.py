@@ -82,7 +82,6 @@ def is_ip_address(address: str) -> bool:
             ):
                 return False
         return True
-    return False
 
 
 def is_port_number(port: int) -> bool:
