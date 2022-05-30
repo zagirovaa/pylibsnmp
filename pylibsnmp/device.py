@@ -69,6 +69,7 @@ class NetDevice:
         self.__indexes = []
         self.__location = ""
         self.__name = ""
+        self.__repeat = None
         self.__session = None
         # Each 60 seconds device related data will be populated
         self.__updatetime = 60
@@ -145,6 +146,7 @@ class NetDevice:
     @autoupdate.setter
     def autoupdate(self, new_value: bool) -> None:
         self.__autoupdate = new_value
+        self.__change_autoupdate()
 
     @property
     def count(self) -> int:
@@ -181,6 +183,7 @@ class NetDevice:
     @updatetime.setter
     def updatetime(self, new_value: int) -> None:
         self.__updatetime = new_value
+        self.__change_autoupdate()
 
     @property
     def uptime(self) -> str:
@@ -205,6 +208,14 @@ class NetDevice:
             return True
         except Exception as err:
             logging.error("Could not connect to device.")
+            logging.error(err)
+
+    def disconnect(self) -> None:
+        try:
+            self.__repeat.cancel()
+            self.__repeat = None
+        except Exception as err:
+            logging.error("Could not disconnect device.")
             logging.error(err)
 
     def get_if_admin_status(self, port: int) -> str:
@@ -503,19 +514,15 @@ class NetDevice:
     # -----------------------------------
     # Рrivate methods declaration section
     # -----------------------------------
-    def __populate(self) -> None:
-        """
-        Populates device fields with necessary data
-        """
-
-        self.__count = int(self.__get_if_count())
-        self.__contact = self.__get_contact()
-        self.__description = self.__get_description()
-        self.__indexes = self.__get_if_indexes()
-        self.__types = self.__get_if_types()
-        self.__location = self.__get_location()
-        self.__name = self.__get_name()
-        self.__uptime = self.__get_uptime()
+    def __change_autoupdate(self):
+        if self.__autoupdate:
+            self.__repeat = helpers.SetInterval(
+                self.__populate,
+                self.__updatetime
+            )
+        elif self.__repeat is not None:
+            self.__repeat.cancel()
+            self.__repeat = None
 
     def __get_contact(self) -> str:
         """
@@ -579,14 +586,7 @@ class NetDevice:
             logging.error("Could not get list of interface indexes.")
             logging.error(err)
         else:
-            result = []
-            index_count: int = len(interfaces)
-            if index_count > 0:
-                for interface in interfaces:
-                    result.append(int(interface.value))
-            else:
-                logging.error("No interface index found.")
-            return result
+            return [int(interface.value) for interface in interfaces]
 
     def __get_if_types(self) -> List[str]:
         """
@@ -643,3 +643,17 @@ class NetDevice:
         # Value is the time (in hundredths of a second) since the
         # network management portion of the system was last re-initialized
         return str(timedelta(seconds=(int(value)) / 100))
+
+    def __populate(self) -> None:
+        """
+        Populates device fields with necessary data
+        """
+
+        self.__count = int(self.__get_if_count())
+        self.__contact = self.__get_contact()
+        self.__description = self.__get_description()
+        self.__indexes = self.__get_if_indexes()
+        self.__types = self.__get_if_types()
+        self.__location = self.__get_location()
+        self.__name = self.__get_name()
+        self.__uptime = self.__get_uptime()

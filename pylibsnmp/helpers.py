@@ -3,6 +3,20 @@
 
 
 from __future__ import annotations
+from threading import Timer
+
+
+class SetInterval():
+    def __init__(self, func, sec: int) -> None:
+        def func_wrapper() -> None:
+            self.thread = Timer(sec, func_wrapper)
+            self.thread.start()
+            func()
+        self.thread = Timer(sec, func_wrapper)
+        self.thread.start()
+
+    def cancel(self):
+        self.thread.cancel()
 
 
 def get_bits(octets: int) -> int:
