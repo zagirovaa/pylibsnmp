@@ -83,3 +83,13 @@ def is_ip_address(address: str) -> bool:
                 return False
         return True
     return False
+
+
+def is_port_number(port: int) -> bool:
+    """
+    Function checks whether port number
+    argument has an appropriate value
+    """
+    if type(port) is int:
+        if port > 0 and port <= 65535:
+            return True

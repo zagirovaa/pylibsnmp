@@ -27,8 +27,8 @@ class NetDevice:
     # SNMP default parameters
     __DEFAULT = {
         "ADDRESS": "127.0.0.1",
-        "PORT": 161,
         "COMMUNITY": "public",
+        "PORT": 161,
         "VERSION": 2
     }
     # Delimiters allowed in mac address
@@ -37,8 +37,8 @@ class NetDevice:
     def __init__(
             self,
             address=__DEFAULT["ADDRESS"],
-            port=__DEFAULT["PORT"],
             community=__DEFAULT["COMMUNITY"],
+            port=__DEFAULT["PORT"],
             version=__DEFAULT["VERSION"]) -> None:
         """
         Constructor
@@ -53,7 +53,7 @@ class NetDevice:
             community = NetDevice.__DEFAULT["COMMUNITY"]
         self.__community = community
         # Port must be set and have value between 1 and 65535
-        if 1 > port > 65535:
+        if not helpers.is_port_number(port):
             port = NetDevice.__DEFAULT["PORT"]
         self.__port = port
         # Version must be set and be one of supported
@@ -79,14 +79,14 @@ class NetDevice:
         Returns information about object in human readable format
         """
 
-        value = (
+        TEMPLATE = (
             "Name:          {0}\n"
             "Address:       {1}\n"
             "Port:          {2}\n"
             "Community:     {3}\n"
             "Version:       {4}\n"
         )
-        return value.format(
+        return TEMPLATE.format(
             self.__name,
             self.__address,
             str(self.__port),
@@ -103,16 +103,10 @@ class NetDevice:
 
     @address.setter
     def address(self, new_value: str) -> None:
-        if type(new_value) == str:
-            new_value.strip()
-            if new_value and helpers.is_ip_address(new_value):
-                self.__address = new_value
-            else:
-                logging.error(
-                    "IP address is empty or has an incorrect format."
-                )
+        if helpers.is_ip_address(new_value):
+            self.__address = new_value
         else:
-            logging.error("IP address has to be in text format.")
+            logging.error("IP address is empty or has an incorrect format.")
 
     @property
     def community(self) -> str:
@@ -120,14 +114,7 @@ class NetDevice:
 
     @community.setter
     def community(self, new_value: str) -> None:
-        if type(new_value) == str:
-            new_value.strip()
-            if new_value:
-                self.__community = new_value
-            else:
-                logging.error("Community is not set.")
-        else:
-            logging.error("Community has to be in text string format.")
+        self.__community = new_value
 
     @property
     def port(self) -> int:
@@ -135,7 +122,7 @@ class NetDevice:
 
     @port.setter
     def port(self, new_value: int) -> None:
-        if new_value >= 1 and new_value <= 65535:
+        if helpers.is_port_number(new_value):
             self.__version = new_value
         else:
             logging.error("Port number is out of range.")
@@ -193,10 +180,7 @@ class NetDevice:
 
     @updatetime.setter
     def updatetime(self, new_value: int) -> None:
-        if type(new_value) == int:
-            self.__updatetime = new_value
-        else:
-            logging.error("Incorrect format of update time.")
+        self.__updatetime = new_value
 
     @property
     def uptime(self) -> str:
@@ -213,8 +197,8 @@ class NetDevice:
         try:
             self.__session = Session(
                 hostname=self.__address,
-                remote_port=self.__port,
                 community=self.__community,
+                remote_port=self.__port,
                 version=self.__version
             )
             self.__populate()
@@ -222,27 +206,18 @@ class NetDevice:
         except Exception as err:
             logging.error("Could not connect to device.")
             logging.error(err)
-        return False
 
     def get_if_admin_status(self, port: int) -> str:
         """
         Returns admin status of the given interface
         """
 
-        result = ""
         value = self.__get_if_data(
             "IF_ADMIN_STATUS",
             port,
             "Could not get interface admin status."
         )
-        if value.isdigit():
-            result = snmp.IF_ADMIN_STATES[value]
-        else:
-            logging.error(
-                "Interface admin status " +
-                "has to be in digital format."
-            )
-        return result
+        return snmp.IF_ADMIN_STATES[value]
 
     def get_if_description(self, port: int) -> str:
         """
@@ -255,144 +230,82 @@ class NetDevice:
             "Could not get interface description."
         )
 
-    def get_if_in_bandwidth(self, port: int) -> int:
+    def get_if_in_bandwidth(self, port: int) -> str:
         """
         Returns number of inboud packets on the given interface
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_OCTETS",
             port,
             "Could not get number of inboud bytes."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Number of inbound bytes has to be in digital format."
-            )
-        return result
 
-    def get_if_in_broadcast(self, port: int) -> int:
+    def get_if_in_broadcast(self, port: int) -> str:
         """
         Returns number of inbound broadcast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_BROADCAST",
             port,
             "Could not get number of inbound broadcast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound broadcast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_in_errors(self, port: int) -> int:
+    def get_if_in_errors(self, port: int) -> str:
         """
         Returns number of inbound packets that contained errors
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_ERRORS",
             port,
             "Could not get number of inbound packets with errors."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound packets number with errors " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_in_discards(self, port: int) -> int:
+    def get_if_in_discards(self, port: int) -> str:
         """
         Returns number of inbound discard packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_DISCARDS",
             port,
             "Could not get number of inbound discard packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound discard packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_in_multicast(self, port: int) -> int:
+    def get_if_in_multicast(self, port: int) -> str:
         """
         Returns number of inbound multicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_MULTICAST",
             port,
             "Could not get number of inbound multicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound multicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_in_non_unicast(self, port: int) -> int:
+    def get_if_in_non_unicast(self, port: int) -> str:
         """
         Returns number of inbound nonunicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_NON_UNICAST",
             port,
             "Could not get number of inbound nonunicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound nonunicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_in_unicast(self, port: int) -> int:
+    def get_if_in_unicast(self, port: int) -> str:
         """
         Returns number of inbound unicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_IN_UNICAST",
             port,
             "Could not get number of inbound unicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Inbound unicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
     def get_if_last_change(self, port: int) -> str:
         """
@@ -400,7 +313,6 @@ class NetDevice:
         its operational state for the last time
         """
 
-        result = ""
         value = self.__get_if_data(
             "IF_LAST_CHANGE",
             port,
@@ -408,193 +320,109 @@ class NetDevice:
                 str(port)
             )
         )
-        if value.isdigit():
-            result = str(timedelta(seconds=(int(value)) / 100))
-        else:
-            logging.error(
-                "Last change time has to be in digital format."
-            )
-        return result
+        return str(timedelta(seconds=(int(value)) / 100))
 
-    def get_if_mtu(self, port: int) -> int:
+    def get_if_mtu(self, port: int) -> str:
         """
         Returns mtu value of the given interface
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_MTU",
             port,
             "Could not get mtu value of port number {}.".format(
                 str(port)
             )
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Mtu value has to be in digital format."
-            )
-        return result
 
     def get_if_oper_status(self, port: int) -> str:
         """
         Returns operation status of the given interface
         """
 
-        result = ""
         value = self.__get_if_data(
             "IF_OPER_STATUS",
             port,
             "Could not get interface operation status."
         )
-        if value.isdigit():
-            result = snmp.IF_OPER_STATES[value]
-        else:
-            logging.error(
-                "Interface operation status " +
-                "has to be in digital format."
-            )
-        return result
+        return snmp.IF_OPER_STATES[value]
 
-    def get_if_out_bandwidth(self, port: int) -> int:
+    def get_if_out_bandwidth(self, port: int) -> str:
         """
         Returns number of outbound bytes on the given interface
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_OCTETS",
             port,
             "Could not get number of outboud bytes."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Number of outbound bytes has to be in digital format."
-            )
-        return result
 
-    def get_if_out_broadcast(self, port: int) -> int:
+    def get_if_out_broadcast(self, port: int) -> str:
         """
         Returns number of outbound broadcast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_BROADCAST",
             port,
             "Could not get number of outbound broadcast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound broadcast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_out_errors(self, port: int) -> int:
+    def get_if_out_errors(self, port: int) -> str:
         """
         Returns number of outbound packets that contained errors
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_ERRORS",
             port,
             "Could not get number of outbound packets with errors."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound packets number with errors " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_out_discards(self, port: int) -> int:
+    def get_if_out_discards(self, port: int) -> str:
         """
         Returns number of outbound discard packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_DISCARDS",
             port,
             "Could not get number of outbound discard packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound discard packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_out_multicast(self, port: int) -> int:
+    def get_if_out_multicast(self, port: int) -> str:
         """
         Returns number of outbound multicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_MULTICAST",
             port,
             "Could not get number of outbound multicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound multicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_out_non_unicast(self, port: int) -> int:
+    def get_if_out_non_unicast(self, port: int) -> str:
         """
         Returns number of outbound nonunicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_NON_UNICAST",
             port,
             "Could not get number of outbound nonunicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound nonunicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
-    def get_if_out_unicast(self, port: int) -> int:
+    def get_if_out_unicast(self, port: int) -> str:
         """
         Returns number of outbound unicast packets
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_OUT_UNICAST",
             port,
             "Could not get number of outbound unicast packets."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Outbound unicast packets number " +
-                "has to be in digital format."
-            )
-        return result
 
     def get_if_phys_address(self, port: int, delimiter: str = ":") -> str:
         """
@@ -633,66 +461,44 @@ class NetDevice:
             )
         return result
 
-    def get_if_speed(self, port: int) -> int:
+    def get_if_speed(self, port: int) -> str:
         """
         Returns speed of the given interface
         """
 
-        result = 0
         value = self.__get_if_data(
             "IF_SPEED",
             port,
             "Could not get interface speed."
         )
-        if value.isdigit():
-            result = int(value)
-            if result > NetDevice.__COEFFICIENT:
-                result = result / NetDevice.__COEFFICIENT
-        else:
-            logging.error(
-                "Interface number has to be in digital format."
-            )
-        return result
+        result = int(value)
+        if result > NetDevice.__COEFFICIENT:
+            result = result / NetDevice.__COEFFICIENT
+        return str(result)
 
     def get_if_type(self, port: int) -> str:
         """
         Returns type of the given interface
         """
 
-        result = ""
         value = self.__get_if_data(
             "IF_TYPE",
             port,
             "Could not get interface type."
         )
-        if value.isdigit():
-            result = snmp.IF_TYPES[value]
-        else:
-            logging.error(
-                "Interface type has to be in digital format."
-            )
-        return result
+        return snmp.IF_TYPES[value]
 
-    def get_if_unknown_protos(self, port: int) -> int:
+    def get_if_unknown_protos(self, port: int) -> str:
         """
         Returns the number of packets received via the interface which
         were discarded because of an unknown or unsupported protocol
         """
 
-        result = 0
-        value = self.__get_if_data(
+        return self.__get_if_data(
             "IF_UNKNOWN_PROTOS",
             port,
             "Could not get number of packets with unknown protocols."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error(
-                "Packets number with unknown protocols " +
-                "has to be in digital format."
-            )
-        return result
 
     # -----------------------------------
     # Рrivate methods declaration section
@@ -721,21 +527,15 @@ class NetDevice:
             "Could not get device contact."
         )
 
-    def __get_if_count(self) -> int:
+    def __get_if_count(self) -> str:
         """
         Returns number of interfaces
         """
 
-        result = ""
-        value = self.__get_sys_data(
+        return self.__get_sys_data(
             "IF_NUMBER",
             "Could not get number of interfaces."
         )
-        if value.isdigit():
-            result = int(value)
-        else:
-            logging.error("Value format is incorrect.")
-        return result
 
     def __get_description(self) -> str:
         """
@@ -840,12 +640,10 @@ class NetDevice:
         Returns device uptime
         """
 
-        result = ""
         value = self.__get_sys_data(
             "SYS_UPTIME",
             "Could not get device uptime."
         )
         # Value is the time (in hundredths of a second) since the
         # network management portion of the system was last re-initialized
-        result = str(timedelta(seconds=(int(value)) / 100))
-        return result
+        return str(timedelta(seconds=(int(value)) / 100))
