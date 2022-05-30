@@ -653,7 +653,7 @@ class NetDevice:
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
-        self.__types = self.__get_if_types()
         self.__location = self.__get_location()
         self.__name = self.__get_name()
+        self.__types = self.__get_if_types()
         self.__uptime = self.__get_uptime()
