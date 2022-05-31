@@ -1,4 +1,4 @@
-Welcome to Lumache's documentation!
+Welcome to pylibsnmp documentation!
 ===================================
 
 **pylibsnmp** is a Python library for working with network devices via snmp.
