@@ -4,7 +4,7 @@
 
 from time import sleep
 
-from pylibsnmp.device import NetDevice
+from .pylibsnmp.device import NetDevice
 
 
 snmp_settings = ("192.168.10.206", "public", 2)

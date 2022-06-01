@@ -9,8 +9,8 @@ from typing import List
 
 from easysnmp import Session
 
-from pylibsnmp import snmp
-from pylibsnmp import helpers
+from .pylibsnmp import snmp
+from .pylibsnmp import helpers
 
 
 class NetDevice:
