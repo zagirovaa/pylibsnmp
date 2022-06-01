@@ -8,11 +8,11 @@ build:
 sphinx:
     fail_on_warning: true
 
-python:
-    install:
-        - method: pip
-        path: .
-
 formats:
     - pdf
     - epub
+
+python:
+    install:
+        - method: pip
+            path: .
