@@ -13,6 +13,7 @@ formats:
     - epub
 
 python:
-    install:
-        - method: pip
-            path: .
+  # Install our python package before building the docs
+  install:
+    - method: pip
+      path: .
