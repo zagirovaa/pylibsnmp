@@ -11,7 +11,7 @@ class SetInterval():
     Class for creating python alternative to
     JavaScript setInterval function
     """
-    
+
     def __init__(self, func, sec: int) -> None:
         def func_wrapper() -> None:
             self.thread = Timer(sec, func_wrapper)
