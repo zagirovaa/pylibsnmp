@@ -4,4 +4,5 @@ API
 .. autosummary::
    :toctree: generated
 
-   pylibsnmp
+   pylibsnmp.device
+   pylibsnmp.helpers
