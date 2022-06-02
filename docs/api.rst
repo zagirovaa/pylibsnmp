@@ -1,8 +1,10 @@
 API
 ===
 
+.. module:: pylibsnmp
+
 .. autosummary::
    :toctree: generated
 
-   device
-   helpers
+   pylibsnmp.device
+   pylibsnmp.helpers

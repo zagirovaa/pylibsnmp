@@ -3,7 +3,7 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath("../pylibsnmp/pylibsnmp"))
+sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information
 
