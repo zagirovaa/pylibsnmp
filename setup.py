@@ -10,5 +10,7 @@ setup(
     license="GNU GPLv3",
     packages=["pylibsnmp"],
     zip_safe=False,
-    install_requires=[]
+    install_requires=[
+        "easysnmp",
+    ]
 )

@@ -1,0 +1,2 @@
+easysnmp==0.2.5
+pkg_resources==0.0.0
