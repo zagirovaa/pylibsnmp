@@ -2,4 +2,7 @@ API
 ===
 
 .. autosummary::
-   .. toctree:: pylibsnmp
+   :toctree: pylibsnmp
+
+   device
+   helpers
