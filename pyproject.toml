@@ -3,10 +3,7 @@ name = "pylibsnmp"
 description = "Library for working with network devices via snmp"
 version = "0.1.0"
 authors = [
-    {
-        name = "Abdul Zagirov",
-        email = "zagirovaa@netcon.pro"
-    }
+    { name = "Abdul Zagirov", email = "zagirovaa@netcon.pro" }
 ]
 dependencies = [
     "easysnmp"
