@@ -4,22 +4,6 @@
 
 """
 Python module with helper functions used in the project.
-
-- class SetInterval()
-
-- def get_bits(octets: int) -> int:
-
-- def get_bits(octets: int) -> int:
-
-- def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
-
-- def get_speed(bits: int) -> int:
-
-- def get_unit(bits: int) -> str:
-
-- def is_ip_address(address: str) -> bool:
-
-- def is_port_number(port: int) -> bool:
 """
 
 
