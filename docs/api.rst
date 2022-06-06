@@ -4,5 +4,5 @@ API
 .. autosummary::
    :toctree: pylibsnmp
 
-   device
-   helpers
+   pylibsnmp.device
+   pylibsnmp.helpers
