@@ -13,11 +13,18 @@ from threading import Timer
 
 class SetInterval():
     """
-    Class for creating python alternative to
-    JavaScript setInterval function
+    Class for creating python alternative to JavaScript setInterval function.
     """
 
     def __init__(self, func, sec: int) -> None:
+        """
+        Class constructor.
+
+        params:
+            func - function to execute
+            sec - interval in seconds to execute func
+        """
+
         def func_wrapper() -> None:
             self.thread = Timer(sec, func_wrapper)
             self.thread.start()
@@ -26,22 +33,35 @@ class SetInterval():
         self.thread.start()
 
     def cancel(self):
+        """
+        Cancels Timer object in order for the application to end correctly.
+        """
+
         self.thread.cancel()
 
 
 def get_bits(octets: int) -> int:
     """
-    Converts octets to bits
+    Converts octets to bits.
+
+    An octet is really just a fancy name for a "byte".
+    So if you multiply this number by 8 you get bits.
     """
 
-    # An octet is really just a fancy name for a "byte".
-    # So if you multiply this number by 8 you get bits.
     return octets * 8
 
 
 def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
     """
-    Converts octets to mac address
+    Converts octets to mac address.
+
+    When requesting physical address of the device
+    using snmp responce comes in the format of octets.
+
+    In order to convert it to mac address:
+    - get list of ascii codes of octets
+    - convert it to bytearray
+    - convert it to hex format
     """
 
     step = 2
@@ -60,7 +80,7 @@ def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
 
 def get_speed(bits: int) -> int:
     """
-    Converts bits to Gbits/s, Mbits/s, Kbits/s
+    Converts bits to Kbits/s, Mbits/s or Gbits/s according to the bits count.
     """
 
     if bits >= 1024 * 1024 * 1024:
@@ -76,7 +96,7 @@ def get_speed(bits: int) -> int:
 
 def get_unit(bits: int) -> str:
     """
-    Returns unit type according to bits count
+    Returns unit type according to the bits count.
     """
 
     if bits >= 1024 * 1024 * 1024:
@@ -92,7 +112,12 @@ def get_unit(bits: int) -> str:
 
 def is_ip_address(address: str) -> bool:
     """
-    Checks the string to be in ip address format
+    Checks the string to be in ip address format.
+
+    IP address have to:
+    - have four octets
+    - each octet must be from 0 to 255
+    - each octet must be in digital format
     """
 
     result = address.strip().split(".")
@@ -109,8 +134,9 @@ def is_ip_address(address: str) -> bool:
 
 def is_port_number(port: int) -> bool:
     """
-    Function checks whether port number
-    argument has an appropriate value
+    Checks whether port number argument has an appropriate value.
+
+    Port number has to be in the range of 1 and 65535.
     """
     if type(port) is int:
         if port > 0 and port <= 65535:

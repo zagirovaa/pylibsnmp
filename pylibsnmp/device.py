@@ -26,7 +26,7 @@ from . import helpers
 
 class NetDevice:
     """
-    Class for creating snmp enabled network devices
+    Class for creating snmp enabled network devices.
     """
 
     # Interface speed coefficient
@@ -52,7 +52,13 @@ class NetDevice:
             port=__DEFAULT["PORT"],
             version=__DEFAULT["VERSION"]) -> None:
         """
-        Constructor
+        Class constructor.
+
+        params:
+            address     - device ip address                     - required
+            community   - snmp community    - default "public"  - optional
+            port        - snmp port         - default "161"     - optional
+            version     - snmp version      - default "2"       - optional
         """
 
         # Ip address must be set and have an appropriate format
@@ -71,24 +77,23 @@ class NetDevice:
         if version not in NetDevice.__VERSIONS:
             version = NetDevice.__DEFAULT["VERSION"]
         self.__version = version
-
         self.__autoupdate = False
         self.__contact = ""
-        self.__count = 0
         self.__description = ""
-        self.__types = []
         self.__indexes = []
         self.__location = ""
         self.__name = ""
+        self.__number = 0
         self.__repeat = None
         self.__session = None
+        self.__types = []
         # Each 60 seconds device related data will be populated
         self.__updatetime = 60
         self.__uptime = ""
 
     def __str__(self) -> str:
         """
-        Returns information about object in human readable format
+        Returns information about object in human readable format.
         """
 
         TEMPLATE = (
@@ -160,10 +165,6 @@ class NetDevice:
         self.__change_autoupdate()
 
     @property
-    def count(self) -> int:
-        return self.__count
-
-    @property
     def contact(self) -> str:
         return self.__contact
 
@@ -182,6 +183,10 @@ class NetDevice:
     @property
     def name(self) -> str:
         return self.__name
+
+    @property
+    def number(self) -> int:
+        return self.__number
 
     @property
     def types(self) -> List[str]:
@@ -205,7 +210,8 @@ class NetDevice:
     # ----------------------------------
     def connect(self) -> bool:
         """
-        Initiates connection
+        Initiates connection with the device
+        using parameters passed in constructor.
         """
 
         try:
@@ -222,6 +228,10 @@ class NetDevice:
             logging.error(err)
 
     def disconnect(self) -> None:
+        """
+        Correctly drops connection with the device.
+        """
+
         try:
             self.__repeat.cancel()
             self.__repeat = None
@@ -231,7 +241,13 @@ class NetDevice:
 
     def get_if_admin_status(self, port: int) -> str:
         """
-        Returns admin status of the given interface
+        The desired state of the interface. The testing(3) state indicates
+        that no operational packets can be passed. When a managed system
+        initializes, all interfaces start with ifAdminStatus in the down(2)
+        state. As a result of either explicit management action or per
+        configuration information retained by the managed system,
+        ifAdminStatus is then changed to either the up(1) or testing(3)
+        states (or remains in the down(2) state).
         """
 
         value = self.__get_if_data(
@@ -243,7 +259,9 @@ class NetDevice:
 
     def get_if_description(self, port: int) -> str:
         """
-        Returns description of the given interface
+        A textual string containing information about the interface.
+        This string should include the name of the manufacturer,
+        the product name and the version of the interface hardware/software.
         """
 
         return self.__get_if_data(
@@ -252,9 +270,10 @@ class NetDevice:
             "Could not get interface description."
         )
 
-    def get_if_in_bandwidth(self, port: int) -> str:
+    def get_if_in_octets(self, port: int) -> str:
         """
-        Returns number of inboud packets on the given interface
+        The total number of octets received on the interface,
+        including framing characters.
         """
 
         return self.__get_if_data(
@@ -265,7 +284,10 @@ class NetDevice:
 
     def get_if_in_broadcast(self, port: int) -> str:
         """
-        Returns number of inbound broadcast packets
+        The number of packets, delivered by this sub-layer to a
+        higher (sub-)layer, which were addressed to a broadcast
+        address at this sub-layer. This object is a 64-bit version
+        of ifInBroadcastPkts.
         """
 
         return self.__get_if_data(
@@ -276,7 +298,12 @@ class NetDevice:
 
     def get_if_in_errors(self, port: int) -> str:
         """
-        Returns number of inbound packets that contained errors
+        For packet-oriented interfaces, the number of inbound packets
+        that contained errors preventing them from being deliverable to a
+        higher-layer protocol. For character-oriented or fixed-length
+        interfaces, the number of inbound transmission units that contained
+        errors preventing them from being deliverable to a higher-layer
+        protocol.
         """
 
         return self.__get_if_data(
@@ -287,7 +314,10 @@ class NetDevice:
 
     def get_if_in_discards(self, port: int) -> str:
         """
-        Returns number of inbound discard packets
+        The number of inbound packets which were chosen to be discarded even
+        though no errors had been detected to prevent their being deliverable
+        to a higher-layer protocol. One possible reason for discarding such a
+        packet could be to free up buffer space.
         """
 
         return self.__get_if_data(
@@ -298,7 +328,11 @@ class NetDevice:
 
     def get_if_in_multicast(self, port: int) -> str:
         """
-        Returns number of inbound multicast packets
+        The number of packets, delivered by this sub-layer to a higher
+        (sub-)layer, which were addressed to a multicast address at this
+        sub-layer. For a MAC layer protocol, this includes both Group and
+        Functional addresses. This object is a 64-bit version of
+        ifInMulticastPkts.
         """
 
         return self.__get_if_data(
@@ -309,7 +343,9 @@ class NetDevice:
 
     def get_if_in_non_unicast(self, port: int) -> str:
         """
-        Returns number of inbound nonunicast packets
+        The number of packets, delivered by this sub-layer to a higher
+        (sub-)layer, which were addressed to a multicast or broadcast address
+        at this sub-layer.
         """
 
         return self.__get_if_data(
@@ -320,7 +356,9 @@ class NetDevice:
 
     def get_if_in_unicast(self, port: int) -> str:
         """
-        Returns number of inbound unicast packets
+        The number of packets, delivered by this sub-layer to a higher
+        (sub-)layer, which were not addressed to a multicast or broadcast
+        address at this sub-layer.
         """
 
         return self.__get_if_data(
@@ -331,8 +369,10 @@ class NetDevice:
 
     def get_if_last_change(self, port: int) -> str:
         """
-        Returns when the given interface entered
-        its operational state for the last time
+        The value of sysUpTime at the time the interface entered its current
+        operational state. If the current state was entered prior to the last
+        re-initialization of the local network management subsystem, then this
+        object contains a zero value.
         """
 
         value = self.__get_if_data(
@@ -346,7 +386,10 @@ class NetDevice:
 
     def get_if_mtu(self, port: int) -> str:
         """
-        Returns mtu value of the given interface
+        The size of the largest packet which can be sent/received on the
+        interface, specified in octets. For interfaces that are used for
+        transmitting network datagrams, this is the size of the largest
+        network datagram that can be sent on the interface.
         """
 
         return self.__get_if_data(
@@ -359,7 +402,17 @@ class NetDevice:
 
     def get_if_oper_status(self, port: int) -> str:
         """
-        Returns operation status of the given interface
+        The current operational state of the interface. The testing(3) state
+        indicates that no operational packets can be passed. If ifAdminStatus
+        is down(2) then ifOperStatus should be down(2). If ifAdminStatus is
+        changed to up(1) then ifOperStatus should change to up(1) if the
+        interface is ready to transmit and receive network traffic; it should
+        change to dormant(5) if the interface is waiting for external actions
+        (such as a serial line waiting for an incoming connection); it should
+        remain in the down(2) state if and only if there is a fault that
+        prevents it from going to the up(1) state; it should remain in the
+        notPresent(6) state if the interface has missing (typically, hardware)
+        components.
         """
 
         value = self.__get_if_data(
@@ -369,9 +422,10 @@ class NetDevice:
         )
         return snmp.IF_OPER_STATES[value]
 
-    def get_if_out_bandwidth(self, port: int) -> str:
+    def get_if_out_octets(self, port: int) -> str:
         """
-        Returns number of outbound bytes on the given interface
+        The total number of octets transmitted out of the interface, including
+        framing characters.
         """
 
         return self.__get_if_data(
@@ -382,7 +436,10 @@ class NetDevice:
 
     def get_if_out_broadcast(self, port: int) -> str:
         """
-        Returns number of outbound broadcast packets
+        The total number of packets that higher-level protocols requested be
+        transmitted, and which were addressed to a broadcast address at this
+        sub-layer, including those that were discarded or not sent. This object
+        is a 64-bit version of ifOutBroadcastPkts.
         """
 
         return self.__get_if_data(
@@ -393,7 +450,10 @@ class NetDevice:
 
     def get_if_out_errors(self, port: int) -> str:
         """
-        Returns number of outbound packets that contained errors
+        For packet-oriented interfaces, the number of outbound packets that
+        could not be transmitted because of errors. For character-oriented or
+        fixed-length interfaces, the number of outbound transmission units that
+        could not be transmitted because of errors.
         """
 
         return self.__get_if_data(
@@ -404,7 +464,10 @@ class NetDevice:
 
     def get_if_out_discards(self, port: int) -> str:
         """
-        Returns number of outbound discard packets
+        The number of outbound packets which were chosen to be discarded even
+        though no errors had been detected to prevent their being transmitted.
+        One possible reason for discarding such a packet could be to free up
+        buffer space.
         """
 
         return self.__get_if_data(
@@ -415,7 +478,11 @@ class NetDevice:
 
     def get_if_out_multicast(self, port: int) -> str:
         """
-        Returns number of outbound multicast packets
+        The total number of packets that higher-level protocols requested be
+        transmitted, and which were addressed to a multicast address at this
+        sub-layer, including those that were discarded or not sent. For a MAC
+        layer protocol, this includes both Group and Functional addresses. This
+        object is a 64-bit version of ifOutMulticastPkts.
         """
 
         return self.__get_if_data(
@@ -426,7 +493,10 @@ class NetDevice:
 
     def get_if_out_non_unicast(self, port: int) -> str:
         """
-        Returns number of outbound nonunicast packets
+        The total number of packets that higher-level protocols requested be
+        transmitted, and which were addressed to a multicast or broadcast
+        address at this sub-layer, including those that were discarded or
+        not sent.
         """
 
         return self.__get_if_data(
@@ -437,7 +507,10 @@ class NetDevice:
 
     def get_if_out_unicast(self, port: int) -> str:
         """
-        Returns number of outbound unicast packets
+        The total number of packets that higher-level protocols requested be
+        transmitted, and which were not addressed to a multicast or broadcast
+        address at this sub-layer, including those that were discarded or
+        not sent.
         """
 
         return self.__get_if_data(
@@ -448,11 +521,16 @@ class NetDevice:
 
     def get_if_phys_address(self, port: int, delimiter: str = ":") -> str:
         """
-        Returns physical address of the given interface
+        The interface's address at its protocol sub-layer. For example, for an
+        802.x interface, this object normally contains a MAC address. The
+        interface's media-specific MIB must define the bit and byte ordering
+        and the format of the value of this object. For interfaces which do not
+        have such an address (e.g., a serial line), this object should contain
+        an octet string of zero length.
         """
 
         result = ""
-        if self.__count > 0 and port in self.__indexes:
+        if self.__number > 0 and port in self.__indexes:
             if delimiter in NetDevice.__DELIMITERS:
                 try:
                     snmp_data = self.__session.get(
@@ -485,7 +563,14 @@ class NetDevice:
 
     def get_if_speed(self, port: int) -> str:
         """
-        Returns speed of the given interface
+        An estimate of the interface's current bandwidth in bits per second.
+        For interfaces which do not vary in bandwidth or for those where no
+        accurate estimation can be made, this object should contain the nominal
+        bandwidth. If the bandwidth of the interface is greater than the
+        maximum value reportable by this object then this object should report
+        its maximum value (4,294,967,295) and ifHighSpeed must be used to
+        report the interace's speed. For a sub-layer which has no concept of
+        bandwidth, this object should be zero.
         """
 
         value = self.__get_if_data(
@@ -500,7 +585,9 @@ class NetDevice:
 
     def get_if_type(self, port: int) -> str:
         """
-        Returns type of the given interface
+        The type of interface. Additional values for ifType are assigned by the
+        Internet Assigned Numbers Authority (IANA), through updating the syntax
+        of the IANAifType textual convention.
         """
 
         value = self.__get_if_data(
@@ -512,8 +599,13 @@ class NetDevice:
 
     def get_if_unknown_protos(self, port: int) -> str:
         """
-        Returns the number of packets received via the interface which
-        were discarded because of an unknown or unsupported protocol
+        For packet-oriented interfaces, the number of packets received via the
+        interface which were discarded because of an unknown or unsupported
+        protocol. For character-oriented or fixed-length interfaces that
+        support protocol multiplexing the number of transmission units received
+        via the interface which were discarded because of an unknown or
+        unsupported protocol. For any interface that does not support protocol
+        multiplexing, this counter will always be 0.
         """
 
         return self.__get_if_data(
@@ -526,6 +618,10 @@ class NetDevice:
     # Рrivate methods declaration section
     # -----------------------------------
     def __change_autoupdate(self):
+        """
+        Function activates/deactivates autoupdate functionality.
+        """
+
         if self.__autoupdate:
             self.__repeat = helpers.SetInterval(
                 self.__populate,
@@ -537,7 +633,8 @@ class NetDevice:
 
     def __get_contact(self) -> str:
         """
-        Returns device contact
+        The textual identification of the contact person for this managed node,
+        together with information on how to contact this person.
         """
 
         return self.__get_sys_data(
@@ -545,19 +642,12 @@ class NetDevice:
             "Could not get device contact."
         )
 
-    def __get_if_count(self) -> str:
-        """
-        Returns number of interfaces
-        """
-
-        return self.__get_sys_data(
-            "IF_NUMBER",
-            "Could not get number of interfaces."
-        )
-
     def __get_description(self) -> str:
         """
-        Returns device description
+        A textual description of the entity. This value should include the full
+        name and version identification of the system's hardware type, software
+        operating-system, and networking software. It is mandatory that this
+        only contain printable ASCII characters.
         """
 
         return self.__get_sys_data(
@@ -571,7 +661,11 @@ class NetDevice:
         if_port: int,
         error_msg: str
     ) -> str:
-        if self.__count > 0 and if_port in self.__indexes:
+        """
+        Function used in receiving interface related information.
+        """
+
+        if self.__number > 0 and if_port in self.__indexes:
             try:
                 snmp_data = self.__session.get(
                     snmp.OIDS[snmp_oid] + str(if_port)
@@ -588,7 +682,11 @@ class NetDevice:
 
     def __get_if_indexes(self) -> List[int]:
         """
-        Returns list of interfaces indexes
+        A unique value, greater than zero, for each interface. It is
+        recommended that values are assigned contiguously starting from 1. The
+        value for each interface sub-layer must remain constant at least from
+        one re-initialization of the entity's network management system to the
+        next re-initialization.
         """
 
         try:
@@ -599,9 +697,20 @@ class NetDevice:
         else:
             return [int(interface.value) for interface in interfaces]
 
+    def __get_if_number(self) -> str:
+        """
+        The number of network interfaces (regardless of their current state)
+        present on this system.
+        """
+
+        return self.__get_sys_data(
+            "IF_NUMBER",
+            "Could not get number of interfaces."
+        )
+
     def __get_if_types(self) -> List[str]:
         """
-        Returns list of interface types
+        Returns list of interface types.
         """
 
         result = []
@@ -613,7 +722,8 @@ class NetDevice:
 
     def __get_location(self) -> str:
         """
-        Returns device location
+        The physical location of this node
+        (e.g., `telephone closet, 3rd floor').
         """
 
         return self.__get_sys_data(
@@ -623,7 +733,8 @@ class NetDevice:
 
     def __get_name(self) -> str:
         """
-        Returns device name
+        An administratively-assigned name for this managed node. By convention,
+        this is the node's fully-qualified domain name.
         """
 
         return self.__get_sys_data(
@@ -632,6 +743,10 @@ class NetDevice:
         )
 
     def __get_sys_data(self, snmp_oid: str, error_msg: str) -> str:
+        """
+        Function used in receiving device related information.
+        """
+
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS[snmp_oid]
@@ -644,7 +759,8 @@ class NetDevice:
 
     def __get_uptime(self) -> str:
         """
-        Returns device uptime
+        The time (in hundredths of a second) since the network management
+        portion of the system was last re-initialized.
         """
 
         value = self.__get_sys_data(
@@ -657,10 +773,10 @@ class NetDevice:
 
     def __populate(self) -> None:
         """
-        Populates device fields with necessary data
+        Populates device fields with necessary data.
         """
 
-        self.__count = int(self.__get_if_count())
+        self.__number = int(self.__get_if_number())
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()
         self.__indexes = self.__get_if_indexes()
