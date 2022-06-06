@@ -17,7 +17,6 @@ version = '0.3.2'
 # -- General configuration
 
 extensions = [
-    "sphinx.ext.napoleon",
     'sphinx.ext.duration',
     'sphinx.ext.doctest',
     'sphinx.ext.autodoc',
@@ -36,7 +35,9 @@ templates_path = ['_templates']
 # -- Options for HTML output
 
 # html_theme = 'sphinx_rtd_theme'
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+# html_theme = 'karma_sphinx_theme'
+html_theme = 'sphinx_documatt_theme'
 
 # -- Options for EPUB output
 epub_show_urls = 'footnote'
