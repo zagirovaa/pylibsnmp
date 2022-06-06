@@ -2,6 +2,25 @@
 # -*- coding: utf-8 -*-
 
 
+"""
+Python module with NetDevice class used
+to create network devices with SNMP protocol enabled.
+
+SNMP v1 and v2 are supported.
+
+Pass ip address, snmp community, port and version in order
+to be able to initialize the connection with the device.
+
+Example:
+    from pylibsnmp.device import NetDevice
+    snmp_settings = ("192.168.10.206")
+    device = NetDevice()
+    device.address, device.community, device.version = snmp_settings
+    if device.connect():
+        print(device)
+"""
+
+
 from __future__ import annotations
 from datetime import timedelta
 import logging

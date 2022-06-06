@@ -2,6 +2,27 @@
 # -*- coding: utf-8 -*-
 
 
+"""
+Python module with helper functions used in the project.
+
+- class SetInterval()
+
+- def get_bits(octets: int) -> int:
+
+- def get_bits(octets: int) -> int:
+
+- def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
+
+- def get_speed(bits: int) -> int:
+
+- def get_unit(bits: int) -> str:
+
+- def is_ip_address(address: str) -> bool:
+
+- def is_port_number(port: int) -> bool:
+"""
+
+
 from __future__ import annotations
 from threading import Timer
 
@@ -55,8 +76,7 @@ def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
 
 def get_speed(bits: int) -> int:
     """
-    Converts bits to bits/s
-    Gbits/s, Mbits/s, Kbits/s or Bits/s
+    Converts bits to Gbits/s, Mbits/s, Kbits/s
     """
 
     if bits >= 1024 * 1024 * 1024:
