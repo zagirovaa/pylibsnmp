@@ -10,6 +10,8 @@ SNMP v1 and v2 are supported.
 
 Pass ip address, snmp community, port and version in order
 to be able to initialize the connection with the device.
+
+IP address is required while snmp community, port and version are optional.
 """
 
 
@@ -53,14 +55,12 @@ class NetDevice:
             version=__DEFAULT["VERSION"]) -> None:
         """
         Class constructor.
-
         params:
-            address     - device ip address                     - required
-            community   - snmp community    - default "public"  - optional
-            port        - snmp port         - default "161"     - optional
-            version     - snmp version      - default "2"       - optional
+        address: str - device ip address (required)
+        community: str - snmp community (default value "public", optional)
+        port: int - snmp port (default value "161", optional)
+        version: int - snmp version (default value "2", optional)
         """
-
         # Ip address must be set and have an appropriate format
         if not address.strip() or not helpers.is_ip_address(address):
             address = NetDevice.__DEFAULT["ADDRESS"]
@@ -95,7 +95,6 @@ class NetDevice:
         """
         Returns information about object in human readable format.
         """
-
         TEMPLATE = (
             "Name:          {0}\n"
             "Address:       {1}\n"
@@ -116,6 +115,7 @@ class NetDevice:
     # ---------------------------------------
     @property
     def address(self) -> str:
+        """IP address"""
         return self.__address
 
     @address.setter
@@ -127,6 +127,7 @@ class NetDevice:
 
     @property
     def community(self) -> str:
+        """SNMP community"""
         return self.__community
 
     @community.setter
@@ -135,6 +136,7 @@ class NetDevice:
 
     @property
     def port(self) -> int:
+        """SNMP port"""
         return self.__port
 
     @port.setter
@@ -146,6 +148,7 @@ class NetDevice:
 
     @property
     def version(self) -> int:
+        """SNMP version"""
         return self.__version
 
     @version.setter
@@ -157,6 +160,7 @@ class NetDevice:
 
     @property
     def autoupdate(self) -> bool:
+        """Enable/disable device information autoupdate"""
         return self.__autoupdate
 
     @autoupdate.setter
@@ -166,22 +170,27 @@ class NetDevice:
 
     @property
     def contact(self) -> str:
+        """Contact"""
         return self.__contact
 
     @property
     def description(self) -> str:
+        """Description"""
         return self.__description
 
     @property
     def indexes(self) -> List[int]:
+        """List of interface numbers"""
         return self.__indexes
 
     @property
     def location(self) -> str:
+        """Location"""
         return self.__location
 
     @property
     def name(self) -> str:
+        """Name"""
         return self.__name
 
     @property
@@ -190,10 +199,12 @@ class NetDevice:
 
     @property
     def types(self) -> List[str]:
+        """List of interface types"""
         return self.__types
 
     @property
     def updatetime(self) -> int:
+        """Autoupdate interval"""
         return self.__updatetime
 
     @updatetime.setter
@@ -203,6 +214,7 @@ class NetDevice:
 
     @property
     def uptime(self) -> str:
+        """Uptime"""
         return self.__uptime
 
     # ----------------------------------
@@ -213,7 +225,6 @@ class NetDevice:
         Initiates connection with the device
         using parameters passed in constructor.
         """
-
         try:
             self.__session = Session(
                 hostname=self.__address,
@@ -231,7 +242,6 @@ class NetDevice:
         """
         Correctly drops connection with the device.
         """
-
         try:
             self.__repeat.cancel()
             self.__repeat = None
@@ -249,7 +259,6 @@ class NetDevice:
         ifAdminStatus is then changed to either the up(1) or testing(3)
         states (or remains in the down(2) state).
         """
-
         value = self.__get_if_data(
             "IF_ADMIN_STATUS",
             port,
@@ -263,7 +272,6 @@ class NetDevice:
         This string should include the name of the manufacturer,
         the product name and the version of the interface hardware/software.
         """
-
         return self.__get_if_data(
             "IF_DESCRIPTION",
             port,
@@ -275,7 +283,6 @@ class NetDevice:
         The total number of octets received on the interface,
         including framing characters.
         """
-
         return self.__get_if_data(
             "IF_IN_OCTETS",
             port,
@@ -289,7 +296,6 @@ class NetDevice:
         address at this sub-layer. This object is a 64-bit version
         of ifInBroadcastPkts.
         """
-
         return self.__get_if_data(
             "IF_IN_BROADCAST",
             port,
@@ -305,7 +311,6 @@ class NetDevice:
         errors preventing them from being deliverable to a higher-layer
         protocol.
         """
-
         return self.__get_if_data(
             "IF_IN_ERRORS",
             port,
@@ -319,7 +324,6 @@ class NetDevice:
         to a higher-layer protocol. One possible reason for discarding such a
         packet could be to free up buffer space.
         """
-
         return self.__get_if_data(
             "IF_IN_DISCARDS",
             port,
@@ -334,7 +338,6 @@ class NetDevice:
         Functional addresses. This object is a 64-bit version of
         ifInMulticastPkts.
         """
-
         return self.__get_if_data(
             "IF_IN_MULTICAST",
             port,
@@ -347,7 +350,6 @@ class NetDevice:
         (sub-)layer, which were addressed to a multicast or broadcast address
         at this sub-layer.
         """
-
         return self.__get_if_data(
             "IF_IN_NON_UNICAST",
             port,
@@ -360,7 +362,6 @@ class NetDevice:
         (sub-)layer, which were not addressed to a multicast or broadcast
         address at this sub-layer.
         """
-
         return self.__get_if_data(
             "IF_IN_UNICAST",
             port,
@@ -374,7 +375,6 @@ class NetDevice:
         re-initialization of the local network management subsystem, then this
         object contains a zero value.
         """
-
         value = self.__get_if_data(
             "IF_LAST_CHANGE",
             port,
@@ -391,7 +391,6 @@ class NetDevice:
         transmitting network datagrams, this is the size of the largest
         network datagram that can be sent on the interface.
         """
-
         return self.__get_if_data(
             "IF_MTU",
             port,
@@ -414,7 +413,6 @@ class NetDevice:
         notPresent(6) state if the interface has missing (typically, hardware)
         components.
         """
-
         value = self.__get_if_data(
             "IF_OPER_STATUS",
             port,
@@ -427,7 +425,6 @@ class NetDevice:
         The total number of octets transmitted out of the interface, including
         framing characters.
         """
-
         return self.__get_if_data(
             "IF_OUT_OCTETS",
             port,
@@ -441,7 +438,6 @@ class NetDevice:
         sub-layer, including those that were discarded or not sent. This object
         is a 64-bit version of ifOutBroadcastPkts.
         """
-
         return self.__get_if_data(
             "IF_OUT_BROADCAST",
             port,
@@ -455,7 +451,6 @@ class NetDevice:
         fixed-length interfaces, the number of outbound transmission units that
         could not be transmitted because of errors.
         """
-
         return self.__get_if_data(
             "IF_OUT_ERRORS",
             port,
@@ -469,7 +464,6 @@ class NetDevice:
         One possible reason for discarding such a packet could be to free up
         buffer space.
         """
-
         return self.__get_if_data(
             "IF_OUT_DISCARDS",
             port,
@@ -484,7 +478,6 @@ class NetDevice:
         layer protocol, this includes both Group and Functional addresses. This
         object is a 64-bit version of ifOutMulticastPkts.
         """
-
         return self.__get_if_data(
             "IF_OUT_MULTICAST",
             port,
@@ -498,7 +491,6 @@ class NetDevice:
         address at this sub-layer, including those that were discarded or
         not sent.
         """
-
         return self.__get_if_data(
             "IF_OUT_NON_UNICAST",
             port,
@@ -512,7 +504,6 @@ class NetDevice:
         address at this sub-layer, including those that were discarded or
         not sent.
         """
-
         return self.__get_if_data(
             "IF_OUT_UNICAST",
             port,
@@ -528,7 +519,6 @@ class NetDevice:
         have such an address (e.g., a serial line), this object should contain
         an octet string of zero length.
         """
-
         result = ""
         if self.__number > 0 and port in self.__indexes:
             if delimiter in NetDevice.__DELIMITERS:
@@ -572,7 +562,6 @@ class NetDevice:
         report the interace's speed. For a sub-layer which has no concept of
         bandwidth, this object should be zero.
         """
-
         value = self.__get_if_data(
             "IF_SPEED",
             port,
@@ -589,7 +578,6 @@ class NetDevice:
         Internet Assigned Numbers Authority (IANA), through updating the syntax
         of the IANAifType textual convention.
         """
-
         value = self.__get_if_data(
             "IF_TYPE",
             port,
@@ -607,7 +595,6 @@ class NetDevice:
         unsupported protocol. For any interface that does not support protocol
         multiplexing, this counter will always be 0.
         """
-
         return self.__get_if_data(
             "IF_UNKNOWN_PROTOS",
             port,
@@ -621,7 +608,6 @@ class NetDevice:
         """
         Function activates/deactivates autoupdate functionality.
         """
-
         if self.__autoupdate:
             self.__repeat = helpers.SetInterval(
                 self.__populate,
@@ -636,7 +622,6 @@ class NetDevice:
         The textual identification of the contact person for this managed node,
         together with information on how to contact this person.
         """
-
         return self.__get_sys_data(
             "SYS_CONTACT",
             "Could not get device contact."
@@ -649,7 +634,6 @@ class NetDevice:
         operating-system, and networking software. It is mandatory that this
         only contain printable ASCII characters.
         """
-
         return self.__get_sys_data(
             "SYS_DECRIPTION",
             "Could not get device description."
@@ -664,7 +648,6 @@ class NetDevice:
         """
         Function used in receiving interface related information.
         """
-
         if self.__number > 0 and if_port in self.__indexes:
             try:
                 snmp_data = self.__session.get(
@@ -688,7 +671,6 @@ class NetDevice:
         one re-initialization of the entity's network management system to the
         next re-initialization.
         """
-
         try:
             interfaces = self.__session.walk(snmp.OIDS["IF_INDEX"])
         except Exception as err:
@@ -702,7 +684,6 @@ class NetDevice:
         The number of network interfaces (regardless of their current state)
         present on this system.
         """
-
         return self.__get_sys_data(
             "IF_NUMBER",
             "Could not get number of interfaces."
@@ -712,7 +693,6 @@ class NetDevice:
         """
         Returns list of interface types.
         """
-
         result = []
         for index in self.__indexes:
             if_type = self.get_if_type(index)
@@ -725,7 +705,6 @@ class NetDevice:
         The physical location of this node
         (e.g., `telephone closet, 3rd floor').
         """
-
         return self.__get_sys_data(
             "SYS_LOCATION",
             "Could not get device location."
@@ -736,7 +715,6 @@ class NetDevice:
         An administratively-assigned name for this managed node. By convention,
         this is the node's fully-qualified domain name.
         """
-
         return self.__get_sys_data(
             "SYS_NAME",
             "Could not get device name."
@@ -746,7 +724,6 @@ class NetDevice:
         """
         Function used in receiving device related information.
         """
-
         try:
             snmp_data = self.__session.get(
                 snmp.OIDS[snmp_oid]
@@ -762,7 +739,6 @@ class NetDevice:
         The time (in hundredths of a second) since the network management
         portion of the system was last re-initialized.
         """
-
         value = self.__get_sys_data(
             "SYS_UPTIME",
             "Could not get device uptime."
@@ -775,7 +751,6 @@ class NetDevice:
         """
         Populates device fields with necessary data.
         """
-
         self.__number = int(self.__get_if_number())
         self.__contact = self.__get_contact()
         self.__description = self.__get_description()

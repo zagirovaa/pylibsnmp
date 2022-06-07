@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="pylibsnmp",
-    version="0.1",
+    version="0.3.2",
     description="Library for working with network devices via snmp.",
     long_description="",
     author="Abdul Zagirov",

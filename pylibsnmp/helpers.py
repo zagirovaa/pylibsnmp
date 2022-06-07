@@ -8,6 +8,7 @@ Python module with helper functions used in the project.
 
 
 from __future__ import annotations
+from typing import Callable
 from threading import Timer
 
 
@@ -16,13 +17,13 @@ class SetInterval():
     Class for creating python alternative to JavaScript setInterval function.
     """
 
-    def __init__(self, func, sec: int) -> None:
+    def __init__(self, func: Callable, sec: int) -> None:
         """
         Class constructor.
 
         params:
-            func - function to execute
-            sec - interval in seconds to execute func
+        func: Callable - function to execute
+        sec: int - interval in seconds to execute func
         """
 
         def func_wrapper() -> None:
@@ -59,8 +60,11 @@ def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
     using snmp responce comes in the format of octets.
 
     In order to convert it to mac address:
+
     - get list of ascii codes of octets
+
     - convert it to bytearray
+
     - convert it to hex format
     """
 

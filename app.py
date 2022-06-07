@@ -5,8 +5,6 @@
 from pylibsnmp.device import NetDevice
 
 
-snmp_settings = ("192.168.10.206")
-device = NetDevice()
-device.address, device.community, device.version = snmp_settings
+device = NetDevice(address="192.168.10.206")
 if device.connect():
     print(device)

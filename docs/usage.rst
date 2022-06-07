@@ -1,7 +1,7 @@
 Usage
 =====
 
-.. _install:
+.. _installation:
 
 Installation
 ------------
