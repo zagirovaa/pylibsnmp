@@ -139,6 +139,7 @@ def is_port_number(port: int) -> bool:
 
     Port number has to be in the range of 1 and 65535.
     """
+
     if type(port) is int:
         if port > 0 and port <= 65535:
             return True
