@@ -41,10 +41,8 @@ epub_show_urls = "footnote"
 autodoc_default_options = {
     "members": True,
     "member-order": "bysource",
-    "special-members": True,
+    "special-members": "__init__, __str__",
     "undoc-members": True,
     "exclude-members": "",
-    "private-members": True,
-    "inherited-members": True,
-    "show-inheritance": True
+    "private-members": True
 }
