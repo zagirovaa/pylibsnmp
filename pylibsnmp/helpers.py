@@ -22,8 +22,8 @@ class SetInterval():
         Class constructor.
 
         params:
-            | func: Callable - function to execute
-            | sec: int - interval in seconds to execute func
+            | func: {Callable} - function to execute
+            | sec: {int} - interval in seconds to execute func
         """
 
         def func_wrapper() -> None:
