@@ -57,11 +57,10 @@ class NetDevice:
         Class constructor.
 
         params:
-            | address: str - device ip address (required)
-            | community: str - snmp community
-            (default value "public", optional)
-            | port: int - snmp port (default value "161", optional)
-            | version: int - snmp version (default value "2", optional)
+            | address: {str} - device ip address
+            | community: {str} - snmp community {default: "public"}
+            | port: {int} - snmp port {default: 161}
+            | version: {int} - snmp version {default: 2}
         """
 
         # Ip address must be set and have an appropriate format
