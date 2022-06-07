@@ -55,6 +55,7 @@ class NetDevice:
             version=__DEFAULT["VERSION"]) -> None:
         """
         Class constructor.
+
         params:
             | address: str - device ip address (required)
             | community: str - snmp community
@@ -751,7 +752,7 @@ class NetDevice:
     def __get_location(self) -> str:
         """
         The physical location of this node
-        (e.g., `telephone closet, 3rd floor').
+        (e.g., "telephone closet, 3rd floor").
         """
 
         return self.__get_sys_data(
