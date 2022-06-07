@@ -22,8 +22,8 @@ class SetInterval():
         Class constructor.
 
         params:
-        func: Callable - function to execute
-        sec: int - interval in seconds to execute func
+            | func: Callable - function to execute
+            | sec: int - interval in seconds to execute func
         """
 
         def func_wrapper() -> None:
@@ -60,12 +60,9 @@ def get_mac_from_octets(octets: str, delimiter: str = ":") -> str:
     using snmp responce comes in the format of octets.
 
     In order to convert it to mac address:
-
-    - get list of ascii codes of octets
-
-    - convert it to bytearray
-
-    - convert it to hex format
+    | - get list of ascii codes of octets
+    | - convert it to bytearray
+    | - convert it to hex format
     """
 
     step = 2
@@ -119,9 +116,9 @@ def is_ip_address(address: str) -> bool:
     Checks the string to be in ip address format.
 
     IP address have to:
-    - have four octets
-    - each octet must be from 0 to 255
-    - each octet must be in digital format
+    | - have four octets
+    | - each octet must be from 0 to 255
+    | - each octet must be in digital format
     """
 
     result = address.strip().split(".")

@@ -56,10 +56,11 @@ class NetDevice:
         """
         Class constructor.
         params:
-        address: str - device ip address (required)
-        community: str - snmp community (default value "public", optional)
-        port: int - snmp port (default value "161", optional)
-        version: int - snmp version (default value "2", optional)
+            | address: str - device ip address (required)
+            | community: str - snmp community
+            (default value "public", optional)
+            | port: int - snmp port (default value "161", optional)
+            | version: int - snmp version (default value "2", optional)
         """
         # Ip address must be set and have an appropriate format
         if not address.strip() or not helpers.is_ip_address(address):

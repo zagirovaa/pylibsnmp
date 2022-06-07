@@ -3,6 +3,8 @@
 
 import os
 import sys
+
+
 sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information
@@ -39,7 +41,10 @@ epub_show_urls = "footnote"
 autodoc_default_options = {
     "members": True,
     "member-order": "bysource",
-    "special-members": "__init__",
+    "special-members": True,
     "undoc-members": True,
-    "exclude-members": ""
+    "exclude-members": "",
+    "private-members": True,
+    "inherited-members": True,
+    "show-inheritance": True
 }
